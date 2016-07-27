@@ -67,7 +67,7 @@ ALTER TABLE projections OWNER TO postgres;
 --
 
 CREATE SEQUENCE projects_project_seq
-    START WITH 0
+    START WITH 1
     INCREMENT BY 1
     NO MINVALUE
     NO MAXVALUE

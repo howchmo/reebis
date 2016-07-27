@@ -4,10 +4,12 @@
   "description": "ReeBiS (Resource Breakdown Structure) - is a tool for small companies to do resource projections across multiple projects.  There does not seem to be a tool that does this in the FOSS community and most project management sites suggest using a spreadsheet.  The pivot tables became unwieldy and entering data was non-intuitive.",
   "main": "server.js",
   "dependencies": {
+    "body-parser": "^1.15.2",
     "express": "^4.14.0",
     "jquery": "^3.1.0",
     "jquery-treetable": "^3.2.0",
-    "jquery-ui": "^1.12.0"
+    "jquery-ui": "^1.12.0",
+    "pg-promise": "^5.2.5"
   },
   "devDependencies": {},
   "scripts": {
