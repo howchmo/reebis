@@ -1,6 +1,6 @@
 {
   "name": "ReeBiS",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "ReeBiS (Resource Breakdown Structure) - is a tool for small companies to do resource projections across multiple projects.  There does not seem to be a tool that does this in the FOSS community and most project management sites suggest using a spreadsheet.  The pivot tables became unwieldy and entering data was non-intuitive.",
   "main": "server.js",
   "dependencies": {
@@ -9,12 +9,27 @@
     "jquery": "^3.1.0",
     "jquery-treetable": "^3.2.0",
     "jquery-ui": "^1.12.0",
-    "pg-promise": "^5.2.5"
+    "pg-promise": "^5.2.6",
+    "promise": "^7.1.1"
   },
   "devDependencies": {},
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
   },
   "author": "Howard Mall",
-  "license": "ISC"
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/howchmo/reebis.git"
+  },
+  "keywords": [
+    "resource",
+    "planning",
+    "projections"
+  ],
+  "bugs": {
+    "url": "https://github.com/howchmo/reebis/issues"
+  },
+  "homepage": "https://github.com/howchmo/reebis"
 }

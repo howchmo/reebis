@@ -1,7 +1,12 @@
 var express = require('express');
+var promise = require('promise');
 var app = express();
+
 //var router = express.Router();
-var pgp = require("pg-promise")(/* options */);
+var options = {
+	promiseLib: promise
+};
+var pgp = require("pg-promise")( options );
 var db = pgp("postgres://postgres:postgres@localhost:5432/reebis");
 var bodyParser = require('body-parser');
 
@@ -67,5 +72,5 @@ app.get('/projects', getProjects);
 app.get('/resources', getResources);
 
 app.use( '/', express.static(__dirname+'/public'));
-app.use( '/scripts', express.static(__dirname+'/node_modules/'));
+app.use( '/scripts', express.static(__dirname+'/node_modules'));
 app.listen(8888, "127.0.0.1");
