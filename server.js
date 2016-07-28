@@ -67,9 +67,28 @@ function getResources( req, res, next )
 	});
 }
 
+function getMonths( req, res, next )
+{
+	db.any("select * from months where date_part('year', month)=2016 order by month;").then(
+		function( data )
+		{
+			res.status(200).json(
+			{
+				status: 'success',
+				data: data,
+				message: 'Retrieved months'
+			});
+		}
+	).catch( function(err)
+	{
+		return next(err);
+	});
+}
+
 app.get('/projections', getProjections);
 app.get('/projects', getProjects);
 app.get('/resources', getResources);
+app.get('/months', getMonths);
 
 app.use( '/', express.static(__dirname+'/public'));
 app.use( '/scripts', express.static(__dirname+'/node_modules'));

@@ -1,16 +1,58 @@
 $(function() {
 	// Load the data from the web service
 	$.ajax( {
-		type:'Get',
-		url:'http://localhost:8888/projections',
-		success: function( data ) {
-			// Generate the view from the data retrieved
-			generateOverview( data.data );
-			// Make it a treetable
-			$("#example").treetable({ expandable: true })
+		type: 'Get',
+		url: 'http://localhost:8888/months',
+		success: function( data )
+		{
+			generateHolidaysView( data.data );
+			generateMaxHoursPerMonthView( data.data );
+			$.ajax( {
+				type:'Get',
+				url:'http://localhost:8888/projections',
+				success: function( data )
+				{
+					// Generate the view from the data retrieved
+					generateOverview( data.data );
+					// Make it a treetable
+					$("#example").treetable({ expandable: true })
+				}
+			});
 		}
 	});
 });
+
+function generateHolidaysView( months )
+{
+	var $monthrow = $("<tr/>", {
+		"class":"resource",
+	});
+	$monthrow.append('<td><span class="resource">Holidays</span></td>');
+	for( var j=0; j<12; j++ )
+	{
+		var work = months[j].work;
+		if( months[j].holidays != null )
+			work -= months[j].holidays;
+		$monthrow.append('<td class="number">'+work+'</td>');
+	}
+	$("tbody").append($monthrow);
+}
+
+function generateMaxHoursPerMonthView( months )
+{
+	var $monthrow = $("<tr/>", {
+		"class":"resource",
+	});
+	$monthrow.append('<td><span class="resource">Max Working Hours</span></td>');
+	for( var j=0; j<12; j++ )
+	{
+		var work = months[j].work;
+		if( months[j].holidays != null )
+			work -= months[j].holidays;
+		$monthrow.append('<td class="number">'+work+'</td>');
+	}
+	$("tbody").append($monthrow);
+}
 
 function generateOverview( data )
 {
