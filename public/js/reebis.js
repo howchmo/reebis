@@ -1,3 +1,5 @@
+var lastEdited = null;
+var lastEditedNumber = "";
 $(function() {
 	// Load the data from the web service
 	$.ajax( {
@@ -16,18 +18,67 @@ $(function() {
 					generateOverview( data.data );
 					// Make it a treetable
 					$("#example").treetable({ expandable: true })
+					$(".editable").attr("contenteditable", "true");
+					$(".editable").click(function(e) {
+						recomputeTotals();
+						lastEdited = $(this);
+						lastEditedNumber = $(this).text();
+						e.stopPropagation();
+					});
+					$(document).click( function() {
+						recomputeTotals();
+					});
+					$(document).on('keypress', function(e) {
+						var keyCode = e.keyCode || e.which;
+						if( keyCode == 9 )
+						{
+							recomputeTotals();
+							lastEdited = $(":focus");
+							console.log(lastEdited);
+							lastEditedNumber = lastEdited.text();
+							console.log(lastEditedNumber);
+						}
+					});
 				}
 			});
 		}
 	});
 });
 
+function recomputeTotals()
+{
+	if( lastEdited != null )
+	{
+		// check to make sure it is a number
+		// sum it up
+		if( lastEditedNumber == "" )
+			lastEditedNumber = 0;
+		var difference = parseInt(lastEdited.text()) - parseInt(lastEditedNumber);
+		if( difference != 0 )
+		{
+			var id = lastEdited.attr("id");
+			var ids = id.split("-");
+			var totalId = ids[0]+"-"+ids[2];
+			var total = $("#"+totalId).text();
+			if( total == "" )
+				total = 0;
+			var newTotal = parseInt(total) + difference;
+			if( isNaN(newTotal) )
+				$("#"+totalId).text("");
+			else
+				$("#"+totalId).text(newTotal);
+		}
+		lastEdited = null;
+		lastEditedNumber = "";
+	}
+}
+
 function generateHolidaysView( months )
 {
 	var $monthrow = $("<tr/>", {
-		"class":"resource",
+		"class":"holiday-row",
 	});
-	$monthrow.append('<td><span class="resource">Holidays</span></td>');
+	$monthrow.append('<td><div class="holiday-row-label">Holidays</div></td>');
 	for( var j=0; j<12; j++ )
 	{
 		var holidays = months[j].holidays;
@@ -36,15 +87,15 @@ function generateHolidaysView( months )
 		else
 			$monthrow.append('<td class="number"></td>');
 	}
-	$("tbody").append($monthrow);
+	$("thead").append($monthrow);
 }
 
 function generateMaxHoursPerMonthView( months )
 {
 	var $monthrow = $("<tr/>", {
-		"class":"resource",
+		"class":"max-row",
 	});
-	$monthrow.append('<td><span class="resource">Max Working Hours</span></td>');
+	$monthrow.append('<td><div class="max-row-label">Max Working Hours</div></td>');
 	for( var j=0; j<12; j++ )
 	{
 		var work = months[j].work;
@@ -52,7 +103,7 @@ function generateMaxHoursPerMonthView( months )
 			work -= months[j].holidays;
 		$monthrow.append('<td class="number">'+work+'</td>');
 	}
-	$("tbody").append($monthrow);
+	$("thead").append($monthrow);
 }
 
 function generateOverview( data )
@@ -75,7 +126,7 @@ function generateOverview( data )
 				{
 					for( var j=prevMonth+1; j<13; j++ )
 					{
-						$projectrow.append('<td id="'+resource+'-'+project+'-'+j+'" class="number"></td>');
+						$projectrow.append('<td id="'+resource+'-'+project+'-'+j+'" class="number editable"></td>');
 					}
 				}
 				rows.push($projectrow);
@@ -88,9 +139,9 @@ function generateOverview( data )
 				for( var j=1; j<13; j++ )
 				{
 					if( totals[resource][j] == null )
-						$resourcerow.append('<td class="number" id="'+resource+'-'+j+'"></td>');
+						$resourcerow.append('<td class="number totals" id="'+resource+'-'+j+'"></td>');
 					else
-						$resourcerow.append('<td class="number" id="'+resource+'-'+j+'">'+totals[resource][j]+'</td>');
+						$resourcerow.append('<td class="number totals" id="'+resource+'-'+j+'">'+totals[resource][j]+'</td>');
 				}
 				// Append all the rows to the table
 				for( var r=0; r<rows.length; r++ )
@@ -105,7 +156,7 @@ function generateOverview( data )
 			totals[resource] = [];
 			// create top table row
 			var $resourcerow = $("<tr/>", {
-				"class":"resource",
+				"class":"resource-row",
 				"data-tt-id":resource
 			});
 			$resourcerow.append('<td><span class="resource">'+data[i].last+', '+data[i].first+'</span></td>');
@@ -125,7 +176,7 @@ function generateOverview( data )
 				{
 					for( var j=prevMonth+1; j<13; j++ )
 					{
-						$projectrow.append('<td id="'+resource+'-'+project+'-'+j+'" class="number"></td>');
+						$projectrow.append('<td id="'+resource+'-'+project+'-'+j+'" class="number editable"></td>');
 					}
 				}
 				rows.push($projectrow);
@@ -134,13 +185,14 @@ function generateOverview( data )
 			// create project row
 			$projectrow = $("<tr>", {
 				"data-tt-id":resource+"-"+project,
-				"data-tt-parent-id":resource
+				"data-tt-parent-id":resource,
+				"class" : "project-row"
 			});
 			$projectrow.append('<td><span class="project">'+data[i].title+'</span></td>');
 			// pad columns
 			for( var j=1; j<month; j++ )
 			{
-				$projectrow.append('<td id="'+resource+'-'+project+'-'+j+'" class="number"></td>');
+				$projectrow.append('<td id="'+resource+'-'+project+'-'+j+'" class="number editable"></td>');
 			}
 		}
 		hours = data[i].hours;
@@ -150,9 +202,8 @@ function generateOverview( data )
 		// calculate totals
 		totals[resource][month] += hours;
 		// add the hours column
-		$projectrow.append('<td id="'+resource+'-'+project+'-'+month+'" data-projection-id="'+data[i].projection+'" class="number">'+hours+'</td>');
+		$projectrow.append('<td id="'+resource+'-'+project+'-'+month+'" data-projection-id="'+data[i].projection+'" class="number editable">'+hours+'</td>');
 		prevMonth = month;
-		console.log(data[i].projection);
 		// delay putting it in the DOM until we have totals
 	}
 }

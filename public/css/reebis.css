@@ -33,3 +33,49 @@ body {
 	font-size:18pt;
 	text-align:center;
 }
+
+.project-row:hover {
+	background-color:yellow;
+}
+
+.totals {
+	font-weight:bold;
+	font-style: italic;
+}
+
+.editable:hover {
+	border-style:solid;
+	border-width: 1;
+	border-color:black;
+	background-color:white;
+}
+
+.holiday-row {
+	font-size:11pt;
+}
+
+.holiday-row > td {
+	padding-right:15px;
+	font-weight:bold;
+}
+
+.holiday-row-label {
+	font-size:12pt;
+	font-weight:bold;
+	padding:5px;
+}
+
+.max-row {
+	font-size:11pt;
+}
+
+.max-row > td {
+	padding-right:15px;
+	font-weight:bold;
+}
+
+.max-row-label {
+	font-size:12pt;
+	font-weight:bold;
+	padding:5px;
+}
