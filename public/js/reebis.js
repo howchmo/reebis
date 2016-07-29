@@ -30,10 +30,11 @@ function generateHolidaysView( months )
 	$monthrow.append('<td><span class="resource">Holidays</span></td>');
 	for( var j=0; j<12; j++ )
 	{
-		var work = months[j].work;
-		if( months[j].holidays != null )
-			work -= months[j].holidays;
-		$monthrow.append('<td class="number">'+work+'</td>');
+		var holidays = months[j].holidays;
+		if( holidays != null )
+			$monthrow.append('<td class="number">'+holidays+'</td>');
+		else
+			$monthrow.append('<td class="number"></td>');
 	}
 	$("tbody").append($monthrow);
 }
