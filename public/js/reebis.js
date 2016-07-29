@@ -63,10 +63,24 @@ function generateOverview( data )
 	var month = "";
 	var project = "";
 	var totalHours = 0;
+	var $projectrow = null;
+	var prevMonth = null;
 	for( var i=0; i<data.length; i++ )
 	{
 		if( resource != data[i].resource )
 		{
+			if( $projectrow != null )
+			{
+				if( prevMonth+1 < 13 )
+				{
+					for( var j=prevMonth+1; j<13; j++ )
+					{
+						$projectrow.append('<td id="'+resource+'-'+project+'-'+j+'" class="number"></td>');
+					}
+				}
+				rows.push($projectrow);
+				$projectrow = null;
+			}
 			// New resource, so write out the old resource
 			if( rows.length > 0 )
 			{
@@ -94,42 +108,51 @@ function generateOverview( data )
 				"class":"resource",
 				"data-tt-id":resource
 			});
-			$resourcerow.append('<td><span class="resource">'+resource+'</span></td>');
+			$resourcerow.append('<td><span class="resource">'+data[i].last+', '+data[i].first+'</span></td>');
 			// delay writing out the resource data until we have totals
 			rows.push($resourcerow);
 			project = "";
 		}
 
-		if( project != data[i].title )
+		var dateObj = new Date(data[i].month);
+		var month = parseInt(dateObj.getMonth())+1;
+		if( project != data[i].project )
 		{
-			project = data[i].title;
+			if( $projectrow != null )
+			{
+				// pad the following rows
+				if( prevMonth+1 < 13 )
+				{
+					for( var j=prevMonth+1; j<13; j++ )
+					{
+						$projectrow.append('<td id="'+resource+'-'+project+'-'+j+'" class="number"></td>');
+					}
+				}
+				rows.push($projectrow);
+			}
+			project = data[i].project;
 			// create project row
-			var $projectrow = $("<tr>", {
+			$projectrow = $("<tr>", {
 				"data-tt-id":resource+"-"+project,
 				"data-tt-parent-id":resource
 			});
-			$projectrow.append('<td><span class="project">'+project+'</span></td>');
-
-			var dateObj = new Date(data[i].month);
-			var month = parseInt(dateObj.getMonth())+1;
-			console.log(resource+"-"+project+"-"+month);
+			$projectrow.append('<td><span class="project">'+data[i].title+'</span></td>');
 			// pad columns
-			for( var j=1; j<13; j++ )
+			for( var j=1; j<month; j++ )
 			{
-				hours = "";
-				if( month == j )
-				{
-					hours = data[i].hours;
-					// what if we haven't calculated totals yet?
-					if( totals[resource][month] == null )
-						totals[resource][month] = 0;
-					// calculate totals
-					totals[resource][month] += hours;
-				}
-				$projectrow.append('<td id="'+resource+'-'+project+'-'+j+'" class="number">'+hours+'</td>');
+				$projectrow.append('<td id="'+resource+'-'+project+'-'+j+'" class="number"></td>');
 			}
-			// delay putting it in the DOM until we have totals
-			rows.push($projectrow);
 		}
+		hours = data[i].hours;
+		// what if we haven't calculated totals yet?
+		if( totals[resource][month] == null )
+			totals[resource][month] = 0;
+		// calculate totals
+		totals[resource][month] += hours;
+		// add the hours column
+		$projectrow.append('<td id="'+resource+'-'+project+'-'+month+'" data-projection-id="'+data[i].projection+'" class="number">'+hours+'</td>');
+		prevMonth = month;
+		console.log(data[i].projection);
+		// delay putting it in the DOM until we have totals
 	}
 }
