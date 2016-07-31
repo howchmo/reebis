@@ -51,12 +51,16 @@ function recomputeTotals()
 		// sum it up
 		if( lastEditedNumber == "" )
 			lastEditedNumber = 0;
-		var difference = parseInt(lastEdited.text()) - parseInt(lastEditedNumber);
+		var subtractor = 0;
+		if( lastEdited.text() != "" )
+			subtractor = parseInt(lastEdited.text());
+		var difference = subtractor - parseInt(lastEditedNumber);
+		console.log(lastEdited.text()+" - "+lastEditedNumber);
 		console.log("difference == \""+difference+"\"");
 		if( difference != 0 && !isNaN(difference) )
 		{
 			var id = lastEdited.attr("id");
-		var ids = id.split("-");
+			var ids = id.split("-");
 			var totalId = ids[0]+"-"+ids[2];
 			var total = $("#"+totalId).text();
 			if( total == "" )
