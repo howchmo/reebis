@@ -28,15 +28,13 @@ $(function() {
 					$(document).click( function() {
 						recomputeTotals();
 					});
-					$(document).on('keypress', function(e) {
+					$(document).on('keyup', function(e) {
 						var keyCode = e.keyCode || e.which;
 						if( keyCode == 9 )
 						{
 							recomputeTotals();
 							lastEdited = $(":focus");
-							console.log(lastEdited);
 							lastEditedNumber = lastEdited.text();
-							console.log(lastEditedNumber);
 						}
 					});
 				}
@@ -54,10 +52,11 @@ function recomputeTotals()
 		if( lastEditedNumber == "" )
 			lastEditedNumber = 0;
 		var difference = parseInt(lastEdited.text()) - parseInt(lastEditedNumber);
-		if( difference != 0 )
+		console.log("difference == \""+difference+"\"");
+		if( difference != 0 && !isNaN(difference) )
 		{
 			var id = lastEdited.attr("id");
-			var ids = id.split("-");
+		var ids = id.split("-");
 			var totalId = ids[0]+"-"+ids[2];
 			var total = $("#"+totalId).text();
 			if( total == "" )
