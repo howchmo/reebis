@@ -85,11 +85,51 @@ function getMonths( req, res, next )
 	});
 }
 
+function postProjection( req, res, next )
+{
+	console.log(req.body);
+	if( req.body.projection != null )
+	{
+		db.any("update projections set hours="+req.body.hours+" where projection="+req.body.projection+";").then(function( data )
+		{
+			console.log(data);
+			res.status(200).json(
+			{
+				status: 'success',
+				message: 'projection:'+req.body.projection+' updated'
+			});
+		}).catch( function( err )
+		{
+			return next(err);
+		});
+		console.log("update projections set hours="+req.body.hours+" where projection="+req.body.projection+";");
+	}
+	else
+	{
+		db.any("insert into projections (month, project, resource, hours) values ('"+req.body.month+"', "+req.body.project+", "+req.body.resource+", "+req.body.hours+") returning projection;").then(function( data )
+		{
+			console.log(data);
+			res.status(200).json(
+			{
+				status: 'success',
+				message: 'projection:'+data[0].projection+' inserted',
+				projection: data[0].projection
+			});
+		}).catch( function( err )
+		{
+			return next(err);
+		});
+		console.log("insert into projections (month, project, resource, hours) values ("+req.body.month+", "+req.body.project+", "+req.body.resource+", "+req.body.hours+");");
+	}
+}
+
 app.get('/projections', getProjections);
 app.get('/projects', getProjects);
 app.get('/resources', getResources);
 app.get('/months', getMonths);
+app.post('/projections', postProjection);
 
 app.use( '/', express.static(__dirname+'/public'));
 app.use( '/scripts', express.static(__dirname+'/node_modules'));
 app.listen(8888, "127.0.0.1");
+console.log("listening at '127.0.0.1:8888'");
