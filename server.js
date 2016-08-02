@@ -96,7 +96,8 @@ function postProjection( req, res, next )
 			res.status(200).json(
 			{
 				status: 'success',
-				message: 'projection:'+req.body.projection+' updated'
+				type: 'update',
+				projection: req.body.projection
 			});
 		}).catch( function( err )
 		{
@@ -112,7 +113,7 @@ function postProjection( req, res, next )
 			res.status(200).json(
 			{
 				status: 'success',
-				message: 'projection:'+data[0].projection+' inserted',
+				type: 'insert',
 				projection: data[0].projection
 			});
 		}).catch( function( err )

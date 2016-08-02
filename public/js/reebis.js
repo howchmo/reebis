@@ -20,18 +20,21 @@ $(function() {
 					$("#example").treetable({ expandable: true })
 					$(".editable").attr("contenteditable", "true");
 					$(".editable").click(function(e) {
+						postProjection( lastEdited );
 						recomputeTotals();
 						lastEdited = $(this);
 						lastEditedNumber = $(this).text();
 						e.stopPropagation();
 					});
 					$(document).click( function() {
+						postProjection( lastEdited );
 						recomputeTotals();
 					});
 					$(document).on('keyup', function(e) {
 						var keyCode = e.keyCode || e.which;
 						if( keyCode == 9 )
 						{
+							postProjection(lastEdited);
 							recomputeTotals();
 							lastEdited = $(":focus");
 							lastEditedNumber = lastEdited.text();
@@ -73,6 +76,57 @@ function recomputeTotals()
 		}
 		lastEdited = null;
 		lastEditedNumber = "";
+	}
+}
+
+function postProjection( cell )
+{
+	if( cell != null )
+	{
+		console.log("postProjection("+cell.text()+")");
+		console.log("lastEditedNumber = "+lastEditedNumber);
+		if( cell.text() != lastEditedNumber )
+		{
+			var hours = 0;
+			if( cell.text() != "" && !isNaN(cell.text()) )
+				hours = cell.text();
+			var postMessage = {};
+			if( cell.attr('data-projection-id') == null )
+			{
+				var id = cell.attr('id').split('-');
+				var resource = id[0];
+				var project = id[1];
+				var month = "2016-";
+				if( id[2].length < 2 )
+					month += "0";
+				month += id[2]+"-01";
+				postMessage['month'] = month;
+				postMessage['resource'] = resource;
+				postMessage['project'] = project;
+				postMessage['hours'] = hours;
+			}
+			else
+			{
+				postMessage['projection'] = cell.attr('data-projection-id');
+				postMessage['hours'] = hours;
+			}
+			console.log(JSON.stringify(postMessage));
+			$.post( "projections", postMessage, function( data, status ) {
+				console.log("POST data = "+JSON.stringify(data));
+				if( data.status == 'success' )
+				{
+					if( data.type == "insert" )
+					{
+						cell.attr('data-projection-id', data.projection);
+					}
+				}
+				else
+				{
+					// error handling here
+					alert("Something went wrong on the server!");
+				}
+			});
+		}
 	}
 }
 
