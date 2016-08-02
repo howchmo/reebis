@@ -1,5 +1,6 @@
 var lastEdited = null;
 var lastEditedNumber = "";
+var collapsed = true;
 $(function() {
 	// Load the data from the web service
 	$.ajax( {
@@ -17,7 +18,7 @@ $(function() {
 					// Generate the view from the data retrieved
 					generateOverview( data.data );
 					// Make it a treetable
-					$("#example").treetable({ expandable: true })
+					$("#overview").treetable({ expandable: true })
 					$(".editable").attr("contenteditable", "true");
 					$(".editable").click(function(e) {
 						postProjection( lastEdited );
@@ -40,6 +41,7 @@ $(function() {
 							lastEditedNumber = lastEdited.text();
 						}
 					});
+					$(".all-expander").click( toggleAllExpander );
 				}
 			});
 		}
@@ -274,4 +276,23 @@ function generateOverview( data )
 		prevMonth = month;
 		// delay putting it in the DOM until we have totals
 	}
+}
+
+function toggleAllExpander()
+{
+	if( collapsed )
+	{
+		$(".all-expander").removeClass("collapsed");
+		$(".all-expander").addClass("expanded");
+		$("#overview").treetable('expandAll');
+		collapsed = false;
+	}
+	else
+	{
+		$(".all-expander").removeClass("expanded");
+		$(".all-expander").addClass("collapsed");
+		$("#overview").treetable('collapseAll');
+		collapsed = true;
+	}
+
 }

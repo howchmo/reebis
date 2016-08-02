@@ -21,9 +21,10 @@ body {
 
 .number {
 	text-align:right;
+
 }
 
-#example {
+#overview {
 	width:90%;
 	margin:0 auto;
 }
@@ -56,6 +57,7 @@ body {
 
 .holiday-row > td {
 	padding-right:15px;
+
 	font-weight:bold;
 }
 
@@ -79,3 +81,18 @@ body {
 	font-weight:bold;
 	padding:5px;
 }
+
+.all-expander {
+	width:20px;
+	height:20px;
+	float:left;
+}
+
+.all-expander.expanded {
+	background-image:url('/images/expanded.png');
+}
+
+.all-expander.collapsed {
+	background-image:url('/images/collapsed.png');
+}
+
