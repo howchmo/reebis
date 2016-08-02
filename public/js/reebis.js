@@ -172,20 +172,22 @@ function generateOverview( data )
 	var project = "";
 	var totalHours = 0;
 	var $projectrow = null;
-	var prevMonth = null;
+	var prevMonth = 0;
 	for( var i=0; i<data.length; i++ )
 	{
 		if( resource != data[i].resource )
 		{
 			if( $projectrow != null )
 			{
-				if( prevMonth+1 < 13 )
+				console.log("really end month columns from "+(prevMonth+1)+" to 12");
+				if( month+1 < 13 )
 				{
-					for( var j=prevMonth+1; j<13; j++ )
+					for( var j=month+1; j<13; j++ )
 					{
 						$projectrow.append('<td id="'+resource+'-'+project+'-'+j+'" class="number editable"></td>');
 					}
 				}
+				prevMonth = 0;
 				rows.push($projectrow);
 				$projectrow = null;
 			}
@@ -224,18 +226,22 @@ function generateOverview( data )
 
 		var dateObj = new Date(data[i].month);
 		var month = parseInt(dateObj.getMonth())+1;
-		if( project != data[i].project )
+		if( project != data[i].project ) // New project row
 		{
+			// if there is a projectrow and all the month columns have not been filled out in the previous row
+			// then pad to the end
 			if( $projectrow != null )
 			{
-				// pad the following rows
+				// pad the ending month columns
 				if( prevMonth+1 < 13 )
 				{
+					console.log("end month columns from "+(prevMonth+1)+" to 12");
 					for( var j=prevMonth+1; j<13; j++ )
 					{
 						$projectrow.append('<td id="'+resource+'-'+project+'-'+j+'" class="number editable"></td>');
 					}
 				}
+				prevMonth = 0;
 				rows.push($projectrow);
 			}
 			project = data[i].project;
@@ -246,8 +252,12 @@ function generateOverview( data )
 				"class" : "project-row"
 			});
 			$projectrow.append('<td><span class="project">'+data[i].title+'</span></td>');
-			// pad columns
-			for( var j=1; j<month; j++ )
+		}
+		// pad month columns from the previous month to the current month
+		if( prevMonth+1 < month )
+		{
+			console.log("pad month columns from "+(prevMonth+1)+" to "+month);
+			for( var j=prevMonth+1; j<month; j++ )
 			{
 				$projectrow.append('<td id="'+resource+'-'+project+'-'+j+'" class="number editable"></td>');
 			}
@@ -259,6 +269,7 @@ function generateOverview( data )
 		// calculate totals
 		totals[resource][month] += hours;
 		// add the hours column
+		console.log("add "+hours+" hours for month "+month);
 		$projectrow.append('<td id="'+resource+'-'+project+'-'+month+'" data-projection-id="'+data[i].projection+'" class="number editable">'+hours+'</td>');
 		prevMonth = month;
 		// delay putting it in the DOM until we have totals
