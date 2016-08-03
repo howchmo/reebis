@@ -35,8 +35,12 @@ body {
 	text-align:center;
 }
 
+/* .number:empty {
+	background-color:black;
+} */
+
 .project-row:hover {
-	background-color:#a9efe7;
+	background-color:#a9efe7 !important;
 }
 
 .resource-row:hover {
@@ -50,10 +54,10 @@ body {
 }
 
 .editable:hover {
-	border-style:solid;
-	border-width: 1;
-	border-color:black;
-	background-color:white;
+	border-style:solid !important;
+	border-width: 1 !important;
+	border-color:black !important;
+	background-color:white !important;
 }
 
 .holiday-row {
@@ -101,6 +105,3 @@ body {
 	background-image:url('/images/collapsed.png');
 }
 
-.number:empty {
-	background-color:black;
-}
