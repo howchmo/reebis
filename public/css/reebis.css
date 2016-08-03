@@ -36,7 +36,12 @@ body {
 }
 
 .project-row:hover {
-	background-color:yellow;
+	background-color:#a9efe7;
+}
+
+.resource-row:hover {
+
+	background-color:#29d6c2 !important;
 }
 
 .totals {
