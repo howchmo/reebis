@@ -132,5 +132,5 @@ app.post('/projections', postProjection);
 
 app.use( '/', express.static(__dirname+'/public'));
 app.use( '/scripts', express.static(__dirname+'/node_modules'));
-app.listen(8888, "127.0.0.1");
-console.log("listening at '127.0.0.1:8888'");
+app.listen(8888);
+console.log("listening on port 8888");

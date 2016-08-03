@@ -5,14 +5,14 @@ $(function() {
 	// Load the data from the web service
 	$.ajax( {
 		type: 'Get',
-		url: 'http://localhost:8888/months',
+		url: '/months',
 		success: function( data )
 		{
 			generateHolidaysView( data.data );
 			generateMaxHoursPerMonthView( data.data );
 			$.ajax( {
 				type:'Get',
-				url:'http://localhost:8888/projections',
+				url:'/projections',
 				success: function( data )
 				{
 					// Generate the view from the data retrieved
