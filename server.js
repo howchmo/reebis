@@ -15,7 +15,7 @@ app.use(bodyParser.json());
 
 function getProjections( req, res, next )
 {
-	db.any('select projection, month, projects.project, projects.title, resources.resource, resources.last, resources.first, hours from projections, projects, resources where projections.project=projects.project and resources.resource = projections.resource order by resources.last, projects.title, month;').then(
+	db.any('select projection, month, projects.project, projects.title, resources.resource, resources.last, resources.first, hours from projections, projects, resources where projections.project=projects.project and resources.resource = projections.resource order by resources.department, resources.last, resources.first, projects.title, month;').then(
 		function( data )
 		{
 			res.status(200).json(
