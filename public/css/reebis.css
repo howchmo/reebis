@@ -101,3 +101,6 @@ body {
 	background-image:url('/images/collapsed.png');
 }
 
+.number:empty {
+	background-color:black;
+}
