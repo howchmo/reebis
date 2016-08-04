@@ -20,18 +20,46 @@ $(function() {
 					// Make it a treetable
 					$("#overview").treetable({ expandable: true })
 					$(".editable").attr("contenteditable", "true");
-					$(".editable").click(function(e) {
+					$(".editable").click(function(e)
+					{
 						postProjection( lastEdited );
 						recomputeTotals();
 						lastEdited = $(this);
 						lastEditedNumber = $(this).text();
 						e.stopPropagation();
 					});
-					$(document).click( function() {
+					$(".project-adder").click( function()
+					{
+						alert("add a project");
+						// add another row to the DOM
+						// expand the resource to projects
+						// put a pull down selector for all the projects
+					});
+					$(".project-deleter").click( function()
+					{
+						alert("delete a project");
+						// remove row from DOM
+						// delete from projections where project=X
+					});
+					$(document).click( function()
+					{
 						postProjection( lastEdited );
 						recomputeTotals();
 					});
-					$(document).on('keyup', function(e) {
+					$(document).on('keypress', function(e)
+					{
+						var keyCode = e.keyCode || e.which;
+						if( keyCode == 13 )
+						{
+							e.preventDefault();
+							postProjection(lastEdited);
+							recomputeTotals();
+							lastEdited = $(":focus");
+							lastEditedNumber = lastEdited.text();
+						}
+					});
+					$(document).on('keyup', function(e)
+					{
 						var keyCode = e.keyCode || e.which;
 						if( keyCode == 9 )
 						{
@@ -220,7 +248,7 @@ function generateOverview( data )
 				"class":"resource-row",
 				"data-tt-id":resource
 			});
-			$resourcerow.append('<td><span class="resource">'+data[i].last+', '+data[i].first+'</span></td>');
+			$resourcerow.append('<td><div class="project-adder">+</div><span class="resource">'+data[i].last+', '+data[i].first+'</span></td>');
 			// delay writing out the resource data until we have totals
 			rows.push($resourcerow);
 			project = "";
@@ -253,7 +281,7 @@ function generateOverview( data )
 				"data-tt-parent-id":resource,
 				"class" : "project-row"
 			});
-			$projectrow.append('<td><span class="project">'+data[i].title+'</span></td>');
+			$projectrow.append('<td><div class="project-deleter">x</div><span class="project">'+data[i].title+'</span></td>');
 		}
 		// pad month columns from the previous month to the current month
 		if( prevMonth+1 < month )

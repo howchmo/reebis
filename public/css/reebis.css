@@ -105,3 +105,16 @@ body {
 	background-image:url('/images/collapsed.png');
 }
 
+.project-adder {
+	float:left;
+	font-weight:bold;
+	color:darkgreen;
+}
+
+.project-deleter {
+	float:left;
+	font-weight:bold;
+	color:red;
+	font-size:8pt;
+}
+
