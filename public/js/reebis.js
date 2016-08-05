@@ -413,9 +413,22 @@ function createProjectSelector( exclusions )
 
 function removeProjectRow( rowId )
 {
-	console.log("removeProjectRow( "+rowId+" )");
-	// delete from projections where project=X
-
-	// remove node from DOM
+	//console.log("removeProjectRow( "+rowId+" )");
 	$("#overview").treetable("removeNode", rowId);
+	// console.log("delete from projections");
+	var deleteData = rowId.split("-");
+	var deleteMessage = {};
+	deleteMessage["resource"] = deleteData[0];
+	deleteMessage["project"] = deleteData[1];
+	$.ajax(
+	{
+		url: "/projections",
+		type: 'DELETE',
+		data: deleteMessage,
+		success: function( data, status )
+		{
+			console.log(data);
+		}
+	});
+	console.log("TO DO: update totals");
 }

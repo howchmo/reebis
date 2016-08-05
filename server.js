@@ -124,11 +124,32 @@ function postProjection( req, res, next )
 	}
 }
 
+function removeProjections( req, res, next )
+{
+	if( req.body.project != null && req.body.resource != null )
+	{
+		db.any("delete from projections where project="+req.body.project+" and resource="+req.body.resource+";").then( function( data )
+		{
+			res.status(200).json(
+			{
+				status: 'success',
+				type: 'delete',
+				project: req.body.project,
+				resource: req.body.resource
+			});
+		}).catch( function( err )
+		{
+			return next(err);
+		});
+	}
+}
+
 app.get('/projections', getProjections);
 app.get('/projects', getProjects);
 app.get('/resources', getResources);
 app.get('/months', getMonths);
 app.post('/projections', postProjection);
+app.delete('/projections', removeProjections);
 
 app.use( '/', express.static(__dirname+'/public'));
 app.use( '/scripts', express.static(__dirname+'/node_modules'));
