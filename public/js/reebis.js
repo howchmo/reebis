@@ -49,7 +49,6 @@ $(function() {
 					{
 						// remove row from DOM
 						removeProjectRow($(this).parent().parent().data("ttId"));
-						// delete from projections where project=X
 					});
 					$(document).click( function()
 					{
@@ -142,10 +141,6 @@ function postProjection( cell )
 				month += id[2]+"-01";
 				postMessage['month'] = month;
 				postMessage['resource'] = resource;
-			for( var j=prevMonth+1; j<month; j++ )
-			{
-				$projectrow.append('<td id="'+resource+'-'+project+'-'+j+'" class="number editable"></td>');
-			}
 				postMessage['project'] = project;
 				postMessage['hours'] = hours;
 			}
@@ -387,6 +382,14 @@ function projectSelected()
 	{
 		$projectRow.append('<td id="'+resourceId+'-'+projectId+'-'+j+'" class="number editable" contenteditable="true"></td>');
 	}
+	$(".editable").click(function(e)
+	{
+		postProjection( lastEdited );
+		recomputeTotals();
+		lastEdited = $(this);
+		lastEditedNumber = $(this).text();
+		e.stopPropagation();
+	});
 }
 
 function createProjectSelector( exclusions )
@@ -411,5 +414,8 @@ function createProjectSelector( exclusions )
 function removeProjectRow( rowId )
 {
 	console.log("removeProjectRow( "+rowId+" )");
+	// delete from projections where project=X
+
+	// remove node from DOM
 	$("#overview").treetable("removeNode", rowId);
 }
