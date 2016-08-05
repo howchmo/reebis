@@ -1,6 +1,8 @@
 var lastEdited = null;
 var lastEditedNumber = "";
 var collapsed = true;
+var projects = null;
+
 $(function() {
 	// Load the data from the web service
 	$.ajax( {
@@ -30,15 +32,23 @@ $(function() {
 					});
 					$(".project-adder").click( function()
 					{
-						alert("add a project");
-						// add another row to the DOM
-						// expand the resource to projects
-						// put a pull down selector for all the projects
+						var resourceRow = $(this).parent().parent();
+						// retrieve projects if you have not already done so
+						if( projects == null )
+						{
+							$.get( "/projects", function( data, status )
+							{
+								projects = data.data;
+								addProjectRow(resourceRow);
+							});
+						}
+						else
+							addProjectRow(resourceRow);
 					});
 					$(".project-deleter").click( function()
 					{
-						alert("delete a project");
 						// remove row from DOM
+						removeProjectRow($(this).parent().parent().data("ttId"));
 						// delete from projections where project=X
 					});
 					$(document).click( function()
@@ -88,8 +98,8 @@ function recomputeTotals()
 		if( lastEdited.text() != "" )
 			subtractor = parseInt(lastEdited.text());
 		var difference = subtractor - parseInt(lastEditedNumber);
-		console.log(lastEdited.text()+" - "+lastEditedNumber);
-		console.log("difference == \""+difference+"\"");
+		//console.log(lastEdited.text()+" - "+lastEditedNumber);
+		//console.log("difference == \""+difference+"\"");
 		if( difference != 0 && !isNaN(difference) )
 		{
 			var id = lastEdited.attr("id");
@@ -113,8 +123,8 @@ function postProjection( cell )
 {
 	if( cell != null )
 	{
-		console.log("postProjection("+cell.text()+")");
-		console.log("lastEditedNumber = "+lastEditedNumber);
+		//console.log("postProjection("+cell.text()+")");
+		//console.log("lastEditedNumber = "+lastEditedNumber);
 		if( cell.text() != lastEditedNumber )
 		{
 			var hours = 0;
@@ -132,6 +142,10 @@ function postProjection( cell )
 				month += id[2]+"-01";
 				postMessage['month'] = month;
 				postMessage['resource'] = resource;
+			for( var j=prevMonth+1; j<month; j++ )
+			{
+				$projectrow.append('<td id="'+resource+'-'+project+'-'+j+'" class="number editable"></td>');
+			}
 				postMessage['project'] = project;
 				postMessage['hours'] = hours;
 			}
@@ -140,9 +154,9 @@ function postProjection( cell )
 				postMessage['projection'] = cell.attr('data-projection-id');
 				postMessage['hours'] = hours;
 			}
-			console.log(JSON.stringify(postMessage));
+			//console.log(JSON.stringify(postMessage));
 			$.post( "projections", postMessage, function( data, status ) {
-				console.log("POST data = "+JSON.stringify(data));
+				//console.log("POST data = "+JSON.stringify(data));
 				if( data.status == 'success' )
 				{
 					if( data.type == "insert" )
@@ -209,7 +223,7 @@ function generateOverview( data )
 		{
 			if( $projectrow != null )
 			{
-				console.log("really end month columns from "+(prevMonth+1)+" to 12");
+				//console.log("really end month columns from "+(prevMonth+1)+" to 12");
 				if( month+1 < 13 )
 				{
 					for( var j=month+1; j<13; j++ )
@@ -265,7 +279,7 @@ function generateOverview( data )
 				// pad the ending month columns
 				if( prevMonth+1 < 13 )
 				{
-					console.log("end month columns from "+(prevMonth+1)+" to 12");
+					//console.log("end month columns from "+(prevMonth+1)+" to 12");
 					for( var j=prevMonth+1; j<13; j++ )
 					{
 						$projectrow.append('<td id="'+resource+'-'+project+'-'+j+'" class="number editable"></td>');
@@ -286,7 +300,7 @@ function generateOverview( data )
 		// pad month columns from the previous month to the current month
 		if( prevMonth+1 < month )
 		{
-			console.log("pad month columns from "+(prevMonth+1)+" to "+month);
+			//console.log("pad month columns from "+(prevMonth+1)+" to "+month);
 			for( var j=prevMonth+1; j<month; j++ )
 			{
 				$projectrow.append('<td id="'+resource+'-'+project+'-'+j+'" class="number editable"></td>');
@@ -299,7 +313,7 @@ function generateOverview( data )
 		// calculate totals
 		totals[resource][month] += hours;
 		// add the hours column
-		console.log("add "+hours+" hours for month "+month);
+		//console.log("add "+hours+" hours for month "+month);
 		$projectrow.append('<td id="'+resource+'-'+project+'-'+month+'" data-projection-id="'+data[i].projection+'" class="number editable">'+hours+'</td>');
 		prevMonth = month;
 		// delay putting it in the DOM until we have totals
@@ -322,5 +336,80 @@ function toggleAllExpander()
 		$("#overview").treetable('collapseAll');
 		collapsed = true;
 	}
+}
 
+function addProjectRow( resourceRow )
+{
+	var resource = resourceRow.data("ttId");
+	var excludedProjectIds = findExcludedProjectIds( resource );
+	var $projectSelector = createProjectSelector(excludedProjectIds);
+	// add another row to the DOM
+	var $projectrow = $("<tr>", {
+		"id":"ZZZZZ",
+		"data-tt-id":resource+"-?",
+		"data-tt-parent-id":resource,
+		"class" : "project-row leaf collapsed"
+	});
+	$projectrow.append('<td><div class="project-deleter">x</div><span class="project">'+$projectSelector.prop('outerHTML')+'</span></td>');
+	$("#overview").treetable("loadBranch", $("#overview").treetable("node", resource), $projectrow.prop("outerHTML") );
+	// put a pull down selector for all the projects
+	$("#project-selector").change(projectSelected);
+	$(".project-deleter").click( function()
+	{
+		// remove row from DOM
+		removeProjectRow($(this).parent().parent().data("ttId"));
+		// delete from projections where project=X
+	});
+}
+
+function findExcludedProjectIds( rowId )
+{
+	var subnodes = $("[data-tt-parent-id='"+rowId+"']");
+	var ids = [];
+	for( var i=0; i<subnodes.length; i++ )
+	{
+		ids.push($(subnodes[i]).data("ttId").split('-')[1]);
+	}
+	return ids;
+}
+
+function projectSelected()
+{
+	var projectTitle = $("select option:selected").text();
+	var projectId = $("select option:selected").attr("value");
+	var $projectRow = $("#ZZZZZ");
+	var resourceId = $projectRow.data("ttParentId");
+	$projectRow.find(".project").text(projectTitle);
+	$projectRow.attr("data-tt-id", resourceId+"-"+projectId);
+	$projectRow.attr("id",resourceId+"-"+projectId);
+	$projectRow.removeAttr("id");
+	for( var j=1; j<13; j++ )
+	{
+		$projectRow.append('<td id="'+resourceId+'-'+projectId+'-'+j+'" class="number editable" contenteditable="true"></td>');
+	}
+}
+
+function createProjectSelector( exclusions )
+{
+	console.log(exclusions);
+	var $projectSelector = $("<select id='project-selector'>");
+	$projectSelector.append($("<option>"));
+	for( var i=0; i<projects.length; i++ )
+	{
+		var projectId = projects[i].project;
+		var projectTitle = projects[i].title;
+		console.log(projectId);
+		if( exclusions.indexOf(projectId.toString()) < 0 )
+		{
+			var $option = $("<option>", {"value":projectId}).text(projectTitle);
+			$projectSelector.append($option);
+		}
+	}
+	return $projectSelector;
+}
+
+function removeProjectRow( rowId )
+{
+	console.log("removeProjectRow( "+rowId+" )");
+	$("#overview").treetable("removeNode", rowId);
 }
