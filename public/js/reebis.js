@@ -340,7 +340,9 @@ function toggleAllExpander()
 
 function addProjectRow( resourceRow )
 {
-	var resource = resourceRow.data("ttId");
+	$(".project-adder").off();
+//	var resource = resourceRow.data("ttId");
+	var resource = resourceRow.attr("data-tt-id");
 	var excludedProjectIds = findExcludedProjectIds( resource );
 	var $projectSelector = createProjectSelector(excludedProjectIds);
 	// add another row to the DOM
@@ -354,12 +356,14 @@ function addProjectRow( resourceRow )
 	$("#overview").treetable("loadBranch", $("#overview").treetable("node", resource), $projectrow.prop("outerHTML") );
 	// put a pull down selector for all the projects
 	$("#project-selector").change(projectSelected);
+
 	$(".project-deleter").click( function()
 	{
 		// remove row from DOM
 		removeProjectRow($(this).parent().parent());
 		// delete from projections where project=X
 	});
+
 }
 
 function findExcludedProjectIds( rowId )
@@ -368,7 +372,7 @@ function findExcludedProjectIds( rowId )
 	var ids = [];
 	for( var i=0; i<subnodes.length; i++ )
 	{
-		ids.push($(subnodes[i]).data("ttId").split('-')[1]);
+		ids.push($(subnodes[i]).attr("data-tt-id").split('-')[1]);
 	}
 	return ids;
 }
@@ -377,9 +381,15 @@ function projectSelected()
 {
 	console.log("projectSelected()");
 	var projectTitle = $("select option:selected").text();
+	console.log("	projecTitle = "+projectTitle);
 	var projectId = $("select option:selected").attr("value");
+	console.log("	projectId = "+projectId);
 	var $projectRow = $("#ZZZZZ");
-	var resourceId = $projectRow.data("ttParentId");
+	// var resourceId = $projectRow.data("ttParentId");
+	var resourceId = $projectRow.attr("data-tt-parent-id");
+	console.log("	resourceId = "+resourceId);
+	//var nodeId = $projectRow.data("ttId");
+	var nodeId = $projectRow.attr("data-tt-Id");
 	$projectRow.find(".project").text(projectTitle);
 	$projectRow.removeAttr("data-tt-id");
 	$projectRow.attr("data-tt-id", resourceId+"-"+projectId);
@@ -390,6 +400,11 @@ function projectSelected()
 	{
 		$projectRow.append('<td id="'+resourceId+'-'+projectId+'-'+j+'" class="number editable" contenteditable="true"></td>');
 	}
+
+	//var $node = $("#overview").treetable("node", nodeId);
+	//$("#overview").treetable("loadBranch", $("#overview").treetable("node", resource), $projectrow.prop("outerHTML") );
+	console.log("	project row = '"+$projectRow.prop("outerHTML")+"'");
+
 	$(".editable").click(function(e)
 	{
 		postProjection( lastEdited );
@@ -397,6 +412,25 @@ function projectSelected()
 		lastEdited = $(this);
 		lastEditedNumber = $(this).text();
 		e.stopPropagation();
+	});
+	$(".project-deleter").click( function()
+	{
+		removeProjectRow($(this).parent().parent());
+	});
+	$(".project-adder").click( function()
+	{
+		var resourceRow = $(this).parent().parent();
+		// retrieve projects if you have not already done so
+		if( projects == null )
+		{
+			$.get( "/projects", function( data, status )
+			{
+				projects = data.data;
+				addProjectRow(resourceRow);
+			});
+		}
+		else
+			addProjectRow(resourceRow);
 	});
 }
 
@@ -421,8 +455,9 @@ function createProjectSelector( exclusions )
 
 function removeProjectRow( row )
 {
-	var rowId = row.data("ttId");
-	console.log("removeProjectRow( "+rowId+" )");
+	var rowTtId = row.data("ttId");
+	var rowId = row.attr("data-tt-id");
+	console.log("removeProjectRow( "+rowId+" ) ");
 	if( !rowId.includes("?") )
 	{
 		for( var i=1; i<13; i++ )
@@ -435,21 +470,22 @@ function removeProjectRow( row )
 			}
 		}
 	}
-	//console.log("removeProjectRow( "+rowId+" )");
-	$("#overview").treetable("removeNode", rowId);
-	// console.log("delete from projections");
-	var deleteData = rowId.split("-");
-	var deleteMessage = {};
-	deleteMessage["resource"] = deleteData[0];
-	deleteMessage["project"] = deleteData[1];
-	$.ajax(
+	$("#overview").treetable("removeNode", rowTtId);
+	if( !rowId.includes("?") )
 	{
-		url: "/projections",
-		type: 'DELETE',
-		data: deleteMessage,
-		success: function( data, status )
+		var deleteData = rowId.split("-");
+		var deleteMessage = {};
+		deleteMessage["resource"] = deleteData[0];
+		deleteMessage["project"] = deleteData[1];
+		$.ajax(
 		{
-			console.log(data);
-		}
-	});
+			url: "/projections",
+			type: 'DELETE',
+			data: deleteMessage,
+			success: function( data, status )
+			{
+				console.log(data);
+			}
+		});
+	}
 }

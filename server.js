@@ -128,6 +128,7 @@ function removeProjections( req, res, next )
 {
 	if( req.body.project != null && req.body.resource != null )
 	{
+		console.log("delete from projections where project="+req.body.project+" and resource="+req.body.resource+";");
 		db.any("delete from projections where project="+req.body.project+" and resource="+req.body.resource+";").then( function( data )
 		{
 			res.status(200).json(
