@@ -48,7 +48,7 @@ $(function() {
 					$(".project-deleter").click( function()
 					{
 						// remove row from DOM
-						removeProjectRow($(this).parent().parent().data("ttId"));
+						removeProjectRow($(this).parent().parent());
 					});
 					$(document).click( function()
 					{
@@ -85,6 +85,24 @@ $(function() {
 	});
 });
 
+function setNewTotal( id, delta )
+{
+	console.log("setNewTotal( "+id+", "+delta+" )");
+	if( delta != 0 && !isNaN(delta) )
+	{
+		var ids = id.split("-");
+		var totalId = ids[0]+"-"+ids[2];
+		var total = $("#"+totalId).text();
+		if( total == "" )
+			total = 0;
+		var newTotal = parseInt(total) + delta;
+		if( isNaN(newTotal) || newTotal == 0 )
+			$("#"+totalId).text("");
+		else
+			$("#"+totalId).text(newTotal);
+	}
+}
+
 function recomputeTotals()
 {
 	if( lastEdited != null )
@@ -99,20 +117,7 @@ function recomputeTotals()
 		var difference = subtractor - parseInt(lastEditedNumber);
 		//console.log(lastEdited.text()+" - "+lastEditedNumber);
 		//console.log("difference == \""+difference+"\"");
-		if( difference != 0 && !isNaN(difference) )
-		{
-			var id = lastEdited.attr("id");
-			var ids = id.split("-");
-			var totalId = ids[0]+"-"+ids[2];
-			var total = $("#"+totalId).text();
-			if( total == "" )
-				total = 0;
-			var newTotal = parseInt(total) + difference;
-			if( isNaN(newTotal) )
-				$("#"+totalId).text("");
-			else
-				$("#"+totalId).text(newTotal);
-		}
+		setNewTotal( lastEdited.attr("id"), difference );
 		lastEdited = null;
 		lastEditedNumber = "";
 	}
@@ -276,10 +281,10 @@ function generateOverview( data )
 				{
 					//console.log("end month columns from "+(prevMonth+1)+" to 12");
 					for( var j=prevMonth+1; j<13; j++ )
-					{
+					{https://www.google.com/search?client=ubuntu&channel=fs&q=javascript+force+string&ie=utf-8&oe=utf-8
 						$projectrow.append('<td id="'+resource+'-'+project+'-'+j+'" class="number editable"></td>');
 					}
-				}
+				}https://www.google.com/search?client=ubuntu&channel=fs&q=javascript+force+string&ie=utf-8&oe=utf-8
 				prevMonth = 0;
 				rows.push($projectrow);
 			}
@@ -352,7 +357,7 @@ function addProjectRow( resourceRow )
 	$(".project-deleter").click( function()
 	{
 		// remove row from DOM
-		removeProjectRow($(this).parent().parent().data("ttId"));
+		removeProjectRow($(this).parent().parent());
 		// delete from projections where project=X
 	});
 }
@@ -370,12 +375,15 @@ function findExcludedProjectIds( rowId )
 
 function projectSelected()
 {
+	console.log("projectSelected()");
 	var projectTitle = $("select option:selected").text();
 	var projectId = $("select option:selected").attr("value");
 	var $projectRow = $("#ZZZZZ");
 	var resourceId = $projectRow.data("ttParentId");
 	$projectRow.find(".project").text(projectTitle);
+	$projectRow.removeAttr("data-tt-id");
 	$projectRow.attr("data-tt-id", resourceId+"-"+projectId);
+	$projectRow.removeAttr("id");
 	$projectRow.attr("id",resourceId+"-"+projectId);
 	$projectRow.removeAttr("id");
 	for( var j=1; j<13; j++ )
@@ -411,8 +419,22 @@ function createProjectSelector( exclusions )
 	return $projectSelector;
 }
 
-function removeProjectRow( rowId )
+function removeProjectRow( row )
 {
+	var rowId = row.data("ttId");
+	console.log("removeProjectRow( "+rowId+" )");
+	if( !rowId.includes("?") )
+	{
+		for( var i=1; i<13; i++ )
+		{
+			var id = rowId+"-"+i;
+			if( $("#"+id) != null )
+			{
+				var delta = -parseInt($("#"+id).text());
+				setNewTotal(id, delta);
+			}
+		}
+	}
 	//console.log("removeProjectRow( "+rowId+" )");
 	$("#overview").treetable("removeNode", rowId);
 	// console.log("delete from projections");
@@ -430,5 +452,4 @@ function removeProjectRow( rowId )
 			console.log(data);
 		}
 	});
-	console.log("TO DO: update totals");
 }
