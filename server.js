@@ -6,8 +6,17 @@ var app = express();
 var options = {
 	promiseLib: promise
 };
-var pgp = require("pg-promise")( options );
-var db = pgp("postgres://postgres:postgres@localhost:5432/reebis");
+var mysql = require("promise-mysql");
+var db;
+mysql.createConnection(
+{
+	host: 'localhost',
+	user: 'root',
+	password: '8RunUcHe',
+	database: 'reebis'
+}).then(function (connection) {
+	db = connection;
+});
 var bodyParser = require('body-parser');
 
 app.use(bodyParser.urlencoded({extended:true}));
@@ -15,7 +24,7 @@ app.use(bodyParser.json());
 
 function getProjections( req, res, next )
 {
-	db.any('select projection, month, projects.project, projects.title, resources.resource, resources.last, resources.first, hours from projections, projects, resources where projections.project=projects.project and resources.resource = projections.resource order by resources.department, resources.last, resources.first, projects.title, month;').then(
+	db.query('select projection, month, projects.project, projects.title, resources.resource, resources.last, resources.first, hours from projections, projects, resources where projections.project=projects.project and resources.resource = projections.resource order by resources.department, resources.last, resources.first, projects.title, month;').then(
 		function( data )
 		{
 			res.status(200).json(
@@ -33,7 +42,7 @@ function getProjections( req, res, next )
 
 function getProjects( req, res, next )
 {
-	db.any('select * from projects;').then(
+	db.query('select * from projects;').then(
 		function( data )
 		{
 			res.status(200).json(
@@ -51,7 +60,7 @@ function getProjects( req, res, next )
 
 function getResources( req, res, next )
 {
-	db.any('select * from resources;').then(
+	db.query('select * from resources;').then(
 		function( data )
 		{
 			res.status(200).json(
@@ -69,7 +78,7 @@ function getResources( req, res, next )
 
 function getMonths( req, res, next )
 {
-	db.any("select * from months where date_part('year', month)=2016 order by month;").then(
+	db.query("select * from months where extract(YEAR from month)=2016 order by month;").then(
 		function( data )
 		{
 			res.status(200).json(
@@ -90,7 +99,7 @@ function postProjection( req, res, next )
 	console.log(req.body);
 	if( req.body.projection != null )
 	{
-		db.any("update projections set hours="+req.body.hours+" where projection="+req.body.projection+";").then(function( data )
+		db.query("update projections set hours="+req.body.hours+" where projection="+req.body.projection+";").then(function( data )
 		{
 			console.log(data);
 			res.status(200).json(
@@ -107,7 +116,7 @@ function postProjection( req, res, next )
 	}
 	else
 	{
-		db.any("insert into projections (month, project, resource, hours) values ('"+req.body.month+"', "+req.body.project+", "+req.body.resource+", "+req.body.hours+") returning projection;").then(function( data )
+		db.query("insert into projections (month, project, resource, hours) values ('"+req.body.month+"', "+req.body.project+", "+req.body.resource+", "+req.body.hours+") returning projection;").then(function( data )
 		{
 			console.log(data);
 			res.status(200).json(
@@ -129,7 +138,7 @@ function removeProjections( req, res, next )
 	if( req.body.project != null && req.body.resource != null )
 	{
 		console.log("delete from projections where project="+req.body.project+" and resource="+req.body.resource+";");
-		db.any("delete from projections where project="+req.body.project+" and resource="+req.body.resource+";").then( function( data )
+		db.query("delete from projections where project="+req.body.project+" and resource="+req.body.resource+";").then( function( data )
 		{
 			res.status(200).json(
 			{
@@ -154,5 +163,6 @@ app.delete('/projections', removeProjections);
 
 app.use( '/', express.static(__dirname+'/public'));
 app.use( '/scripts', express.static(__dirname+'/node_modules'));
-app.listen(8888);
-console.log("listening on port 8888");
+var port = 3000;
+app.listen(port);
+console.log("listening on port "+port);
