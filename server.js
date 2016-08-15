@@ -116,20 +116,20 @@ function postProjection( req, res, next )
 	}
 	else
 	{
-		db.query("insert into projections (month, project, resource, hours) values ('"+req.body.month+"', "+req.body.project+", "+req.body.resource+", "+req.body.hours+") returning projection;").then(function( data )
+		db.query("insert into projections (month, project, resource, hours) values ('"+req.body.month+"', "+req.body.project+", "+req.body.resource+", "+req.body.hours+");").then(function( data )
 		{
 			console.log(data);
 			res.status(200).json(
 			{
 				status: 'success',
 				type: 'insert',
-				projection: data[0].projection
+				projection: data.insertId
 			});
 		}).catch( function( err )
 		{
 			return next(err);
 		});
-		console.log("insert into projections (month, project, resource, hours) values ("+req.body.month+", "+req.body.project+", "+req.body.resource+", "+req.body.hours+");");
+		console.log("insert into projections (month, project, resource, hours) values ('"+req.body.month+"', "+req.body.project+", "+req.body.resource+", "+req.body.hours+");");
 	}
 }
 
