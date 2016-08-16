@@ -154,9 +154,101 @@ function removeProjections( req, res, next )
 	}
 }
 
+function postProjects( req, res, next )
+{
+	console.log(req.body);
+	if( req.body.project != null )
+	{
+		// update project with new data
+		var queryStr = "update projects "
+		// set up updates if the values are included
+		queryStr += "set "+req.body.column+" = '"+req.body.value+"'";
+		queryStr += " where project="+req.body.project+";";
+		console.log(queryStr);
+		db.query(queryStr).then(function( data )
+		{
+			console.log(data);
+			res.status(200).json(
+			{
+				status: 'success',
+				type: 'update',
+				project: req.body.project
+			});
+		}).catch( function( err )
+		{
+			return next(err);
+		});
+	}
+	else
+	{
+		var queryStr = "insert into projects (title) values ('"+req.body.title+"');";
+		db.query(queryStr).then(function( data )
+		{
+			console.log(data);
+			res.status(200).json(
+			{
+				status: 'success',
+				type: 'insert',
+				project: data.insertId
+			});
+		}).catch( function( err )
+		{
+			return next(err);
+		});
+		console.log(queryStr);
+	}
+}
+
+function postResources( req, res, next )
+{
+	console.log(req.body);
+	if( req.body.resource != null )
+	{
+		// update project with new data
+		var queryStr = "update resources "
+		// set up updates if the values are included
+		queryStr += "set "+req.body.column+" = '"+req.body.value+"'";
+		queryStr += " where resource="+req.body.resource+";";
+		console.log(queryStr);
+		db.query(queryStr).then(function( data )
+		{
+			console.log(data);
+			res.status(200).json(
+			{
+				status: 'success',
+				type: 'update',
+				resource: req.body.resource
+			});
+		}).catch( function( err )
+		{
+			return next(err);
+		});
+	}
+	else
+	{
+		var queryStr = "insert into resources (last) values ('"+req.body.last+"');";
+		db.query(queryStr).then(function( data )
+		{
+			console.log(data);
+			res.status(200).json(
+			{
+				status: 'success',
+				type: 'insert',
+				resource: data.insertId
+			});
+		}).catch( function( err )
+		{
+			return next(err);
+		});
+		console.log(queryStr);
+	}
+}
+
 app.get('/projections', getProjections);
 app.get('/projects', getProjects);
+app.post('/projects', postProjects);
 app.get('/resources', getResources);
+app.post('/resources', postResources)
 app.get('/months', getMonths);
 app.post('/projections', postProjection);
 app.delete('/projections', removeProjections);
