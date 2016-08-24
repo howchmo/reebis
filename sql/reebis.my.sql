@@ -1,22 +1,12 @@
+# drop table months;
 CREATE TABLE months (
     month date NOT NULL,
     work int(11) NOT NULL,
     holidays int(11)
+,PRIMARY KEY (month)
 );
 
-CREATE TABLE projections (
-    projection int(11) auto_increment NOT NULL, 
-    month date NOT NULL,
-    project int(11),
-    resource int(11),
-    hours int(11),
-    percent double precision,
-    note text,
-PRIMARY KEY (projection)
-);
-ALTER TABLE projections
-    ADD CONSTRAINT projections_pkey PRIMARY KEY (projection);
-
+# drop tables projects;
 CREATE TABLE projects (
     project int(11) auto_increment NOT NULL,
     parent int(11),
@@ -28,9 +18,11 @@ CREATE TABLE projects (
     customer text,
     description text,
     `status` text
-, PRIMARY KEY(`project`)
+,PRIMARY KEY (project)
+,FOREIGN KEY (parent) REFERENCES projects(project)
 );
 
+# drop table resources;
 CREATE TABLE resources (
     resource int(11) NOT NULL,
     first text,
@@ -39,11 +31,22 @@ CREATE TABLE resources (
     category text,
     supervisor text,
     `status` text
+,PRIMARY KEY (resource)
 );
 
-ALTER TABLE months
-    ADD CONSTRAINT months_pkey PRIMARY KEY (month);
-ALTER TABLE projects
-    ADD CONSTRAINT projects_pkey PRIMARY KEY (project);
-ALTER TABLE `projects` ADD INDEX ( parent ) ;
+# drop table projections;
+CREATE TABLE projections (
+    projection int(11) auto_increment NOT NULL, 
+    month date NOT NULL,
+    project int(11),
+    resource int(11),
+    hours int(11),
+    percent double precision,
+    note text
+,PRIMARY KEY (projection)
+,FOREIGN KEY (project) REFERENCES projects(project)
+,FOREIGN KEY (resource) REFERENCES resources(resource)
+,FOREIGN KEY (month) REFERENCES months(month)
+);
+
 
