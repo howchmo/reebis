@@ -2,6 +2,7 @@ CREATE TABLE months (
     month date NOT NULL,
     work int(11) NOT NULL,
     holidays int(11)
+,PRIMARY KEY(month)
 );
 
 CREATE TABLE projections (
@@ -11,11 +12,9 @@ CREATE TABLE projections (
     resource int(11),
     hours int(11),
     percent double precision,
-    note text,
-PRIMARY KEY (projection)
+    note text
+,PRIMARY KEY (projection)
 );
-ALTER TABLE projections
-    ADD CONSTRAINT projections_pkey PRIMARY KEY (projection);
 
 CREATE TABLE projects (
     project int(11) auto_increment NOT NULL,
@@ -28,7 +27,7 @@ CREATE TABLE projects (
     customer text,
     description text,
     `status` text
-, PRIMARY KEY(`project`)
+, PRIMARY KEY(project)
 );
 
 CREATE TABLE resources (
@@ -39,11 +38,7 @@ CREATE TABLE resources (
     category text,
     supervisor text,
     `status` text
+,PRIMARY KEY(resource)
 );
 
-ALTER TABLE months
-    ADD CONSTRAINT months_pkey PRIMARY KEY (month);
-ALTER TABLE projects
-    ADD CONSTRAINT projects_pkey PRIMARY KEY (project);
 ALTER TABLE `projects` ADD INDEX ( parent ) ;
-

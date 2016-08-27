@@ -87,7 +87,7 @@ $(function() {
 
 function setNewTotal( id, delta )
 {
-	console.log("setNewTotal( "+id+", "+delta+" )");
+	//console.log("setNewTotal( "+id+", "+delta+" )");
 	if( delta != 0 && !isNaN(delta) )
 	{
 		var ids = id.split("-");
@@ -355,7 +355,7 @@ function addProjectRow( resourceRow )
 	$projectrow.append('<td><div class="project-deleter">x</div><span class="project">'+$projectSelector.prop('outerHTML')+'</span></td>');
 	$("#overview").treetable("loadBranch", $("#overview").treetable("node", resource), $projectrow.prop("outerHTML") );
 	// put a pull down selector for all the projects
-	$("#project-selector").change(projectSelected);
+	//$("#project-selector").change(projectSelected);
 
 	$(".project-deleter").click( function()
 	{
@@ -364,6 +364,9 @@ function addProjectRow( resourceRow )
 		// delete from projections where project=X
 	});
 
+	$("#project-selector").editableSelect();
+	$("#project-selector").on('select.editable-select', projectSelected);
+	$("#project-selector").on('inputted.editable-select', projectInputted);
 }
 
 function findExcludedProjectIds( rowId )
@@ -377,13 +380,37 @@ function findExcludedProjectIds( rowId )
 	return ids;
 }
 
-function projectSelected()
+function projectInputted(e, i)
+{
+	var projectTitle = e.target.value;
+	$.post( "projects", {"title": projectTitle}, function( data, status )
+	{
+		if( data.status == "success" )
+		{
+			if( data.type == "insert" )
+			{
+				var projectId = data.project
+				setProject( projectTitle, projectId );
+				console.log(projects);
+				projects.push({"title":projectTitle,"project":projectId});
+			}
+		}
+	}); 
+}
+
+function projectSelected( e, i )
 {
 	console.log("projectSelected()");
-	var projectTitle = $("select option:selected").text();
+	var projectTitle = i.text(); // $("select option:selected").text();
 	console.log("	projecTitle = "+projectTitle);
-	var projectId = $("select option:selected").attr("value");
+	var projectId = i.val(); // $("select option:selected").attr("value");
 	console.log("	projectId = "+projectId);
+
+	setProject( projectTitle, projectId );
+}
+
+function setProject(projectTitle, projectId)
+{
 	var $projectRow = $("#ZZZZZ");
 	// var resourceId = $projectRow.data("ttParentId");
 	var resourceId = $projectRow.attr("data-tt-parent-id");
@@ -436,14 +463,14 @@ function projectSelected()
 
 function createProjectSelector( exclusions )
 {
-	console.log(exclusions);
+	//console.log(exclusions);
 	var $projectSelector = $("<select id='project-selector'>");
 	$projectSelector.append($("<option>"));
 	for( var i=0; i<projects.length; i++ )
 	{
 		var projectId = projects[i].project;
 		var projectTitle = projects[i].title;
-		console.log(projectId);
+		//console.log(projectId);
 		if( exclusions.indexOf(projectId.toString()) < 0 )
 		{
 			var $option = $("<option>", {"value":projectId}).text(projectTitle);
@@ -457,7 +484,7 @@ function removeProjectRow( row )
 {
 	var rowTtId = row.data("ttId");
 	var rowId = row.attr("data-tt-id");
-	console.log("removeProjectRow( "+rowId+" ) ");
+	//console.log("removeProjectRow( "+rowId+" ) ");
 	if( !rowId.includes("?") )
 	{
 		for( var i=1; i<13; i++ )
@@ -484,7 +511,7 @@ function removeProjectRow( row )
 			data: deleteMessage,
 			success: function( data, status )
 			{
-				console.log(data);
+				//console.log(data);
 			}
 		});
 	}
