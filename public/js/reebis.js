@@ -259,7 +259,7 @@ function generateOverview( data )
 			totals[resource] = [];
 			// create top table row
 			var $resourcerow = $("<tr/>", {
-				"class":"resource-row",
+				"class":"resource-row branch",
 				"data-tt-id":resource
 			});
 			$resourcerow.append('<td><div class="project-adder">+</div><span class="resource">'+data[i].last+', '+data[i].first+'</span></td>');
@@ -293,7 +293,7 @@ function generateOverview( data )
 			$projectrow = $("<tr>", {
 				"data-tt-id":resource+"-"+project,
 				"data-tt-parent-id":resource,
-				"class" : "project-row"
+				"class" : "project-row leaf collapsed"
 			});
 			$projectrow.append('<td><div class="project-deleter">x</div><span class="project">'+data[i].title+'</span></td>');
 		}
