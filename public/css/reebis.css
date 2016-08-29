@@ -24,10 +24,27 @@ body {
 
 }
 
-#overview {
-	width:96%;
-	margin:0 auto;
+.reebis-table {
+	width:96% !important;
+	margin:0 auto !important;
 }
+
+.datepicker {
+	width:100px;
+	text-align:center;
+	margin: 0 auto;
+	box-sizing: border-box;
+	border:none;
+	background: none;
+}
+
+.datepicker:hover {
+	border-style:solid !important;
+	border-width: 1 !important;
+	border-color:black !important;
+	background-color:white !important;
+}
+
 
 .year-header > div {
 	font-weight:bold;

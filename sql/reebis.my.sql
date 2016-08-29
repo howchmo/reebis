@@ -6,7 +6,17 @@ CREATE TABLE months (
 ,PRIMARY KEY (month)
 );
 
-# drop tables projects;
+CREATE TABLE projections (
+    projection int(11) auto_increment NOT NULL, 
+    month date NOT NULL,
+    project int(11),
+    resource int(11),
+    hours int(11),
+    percent double precision,
+    note text
+,PRIMARY KEY (projection)
+);
+
 CREATE TABLE projects (
     project int(11) auto_increment NOT NULL,
     parent int(11),
@@ -48,5 +58,3 @@ CREATE TABLE projections (
 ,FOREIGN KEY (resource) REFERENCES resources(resource)
 ,FOREIGN KEY (month) REFERENCES months(month)
 );
-
-

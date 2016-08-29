@@ -42,7 +42,8 @@ function getProjections( req, res, next )
 
 function getProjects( req, res, next )
 {
-	db.query('select * from projects;').then(
+	var queryString = "select project, parent, status, title, chargenumber, start, end, manager, customer from (select p1.*, case when p2.parent is null then p2.title else p2.title end as parentTitle from projects p1, projects p2 where p1.parent = p2.project) p  order by parentTitle, status desc, title;";
+	db.query(queryString).then(
 		function( data )
 		{
 			res.status(200).json(
@@ -181,10 +182,11 @@ function postProjects( req, res, next )
 	}
 	else
 	{
-		var queryStr = "insert into projects (title) values ('"+req.body.title+"');";
+		var queryStr = "insert into projects (status, title) values ('Active', '"+req.body.title+"');";
 		db.query(queryStr).then(function( data )
 		{
 			console.log(data);
+			db.query("update projects set parent="+data.insertId+" where project="+data.insertId+";");
 			res.status(200).json(
 			{
 				status: 'success',
