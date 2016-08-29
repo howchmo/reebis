@@ -1,3 +1,4 @@
+var fs = require('fs');
 var express = require('express');
 var promise = require('promise');
 var app = express();
@@ -7,16 +8,14 @@ var options = {
 	promiseLib: promise
 };
 var mysql = require("promise-mysql");
+var dbConfig = JSON.parse(fs.readFileSync('db-config.json', 'utf8'));
 var db;
-mysql.createConnection(
-{
-	host: 'localhost',
-	user: 'reebis',
-	password: 'password',
-	database: 'reebis'
-}).then(function (connection) {
-	db = connection;
-});
+mysql.createConnection(dbConfig).then(
+	function (connection)
+	{
+		db = connection;
+	}
+);
 var bodyParser = require('body-parser');
 
 app.use(bodyParser.urlencoded({extended:true}));
