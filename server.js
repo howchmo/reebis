@@ -11,8 +11,8 @@ var db;
 mysql.createConnection(
 {
 	host: 'localhost',
-	user: 'root',
-	password: '8RunUcHe',
+	user: 'reebis',
+	password: 'password',
 	database: 'reebis'
 }).then(function (connection) {
 	db = connection;
