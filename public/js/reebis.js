@@ -20,7 +20,7 @@ $(function() {
 					// Generate the view from the data retrieved
 					generateOverview( data.data );
 					// Make it a treetable
-					$("#projections").treetable({ expandable: true })
+					$("#projections-table").treetable({ expandable: true })
 					$(".editable").attr("contenteditable", "true");
 					$(".editable").click(function(e)
 					{
@@ -326,14 +326,14 @@ function toggleAllExpander()
 	{
 		$(".all-expander").removeClass("collapsed");
 		$(".all-expander").addClass("expanded");
-		$("#overview").treetable('expandAll');
+		$("#projections-table").treetable('expandAll');
 		collapsed = false;
 	}
 	else
 	{
 		$(".all-expander").removeClass("expanded");
 		$(".all-expander").addClass("collapsed");
-		$("#overview").treetable('collapseAll');
+		$("#projections-table").treetable('collapseAll');
 		collapsed = true;
 	}
 }
@@ -353,7 +353,7 @@ function addProjectRow( resourceRow )
 		"class" : "project-row leaf collapsed"
 	});
 	$projectrow.append('<td><div class="project-deleter">x</div><span class="project">'+$projectSelector.prop('outerHTML')+'</span></td>');
-	$("#overview").treetable("loadBranch", $("#overview").treetable("node", resource), $projectrow.prop("outerHTML") );
+	$("#projections-table").treetable("loadBranch", $("#projections-table").treetable("node", resource), $projectrow.prop("outerHTML") );
 	// put a pull down selector for all the projects
 	//$("#project-selector").change(projectSelected);
 
@@ -428,8 +428,8 @@ function setProject(projectTitle, projectId)
 		$projectRow.append('<td id="'+resourceId+'-'+projectId+'-'+j+'" class="number editable" contenteditable="true"></td>');
 	}
 
-	//var $node = $("#overview").treetable("node", nodeId);
-	//$("#overview").treetable("loadBranch", $("#overview").treetable("node", resource), $projectrow.prop("outerHTML") );
+	//var $node = $("#projections-table").treetable("node", nodeId);
+	//$("#projections-table").treetable("loadBranch", $("#projections-table").treetable("node", resource), $projectrow.prop("outerHTML") );
 	console.log("	project row = '"+$projectRow.prop("outerHTML")+"'");
 
 	$(".editable").click(function(e)
@@ -497,7 +497,7 @@ function removeProjectRow( row )
 			}
 		}
 	}
-	$("#overview").treetable("removeNode", rowTtId);
+	$("#projections-table").treetable("removeNode", rowTtId);
 	if( !rowId.includes("?") )
 	{
 		var deleteData = rowId.split("-");
