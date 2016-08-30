@@ -12,73 +12,84 @@ $(function() {
 		{
 			generateHolidaysView( data.data );
 			generateMaxHoursPerMonthView( data.data );
-			$.ajax( {
-				type:'Get',
-				url:'/projections',
+			$.ajax({
+				type: 'Get',
+				url: '/resources',
 				success: function( data )
 				{
-					// Generate the view from the data retrieved
-					generateOverview( data.data );
-					// Make it a treetable
-					$("#projections-table").treetable({ expandable: true })
-					$(".editable").attr("contenteditable", "true");
-					$(".editable").click(function(e)
-					{
-						postProjection( lastEdited );
-						recomputeTotals();
-						lastEdited = $(this);
-						lastEditedNumber = $(this).text();
-						e.stopPropagation();
-					});
-					$(".project-adder").click( function()
-					{
-						var resourceRow = $(this).parent().parent();
-						// retrieve projects if you have not already done so
-						if( projects == null )
+					generateResources(data.data);
+
+					$.ajax( {
+						type:'Get',
+						url:'/projections',
+						success: function( data )
 						{
-							$.get( "/projects", function( data, status )
+							// Generate the view from the data retrieved
+							generateProjections( data.data );
+
+							// Make it a treetable
+							$("#projections-table").treetable({ expandable: true })
+							$(".editable").attr("contenteditable", "true");
+							$(".editable").click(function(e)
 							{
-								projects = data.data;
-								addProjectRow(resourceRow);
+								postProjection( lastEdited );
+								recomputeTotals();
+								lastEdited = $(this);
+								lastEditedNumber = $(this).text();
+								e.stopPropagation();
 							});
+							$(".project-adder").click( function()
+							{
+								var resourceRow = $(this).parent().parent();
+								// retrieve projects if you have not already done so
+								if( projects == null )
+								{
+									$.get( "/projects", function( data, status )
+									{
+										projects = data.data;
+										addProjectRow(resourceRow);
+									});
+								}
+								else
+									addProjectRow(resourceRow);
+							});
+							$(".project-deleter").click( function()
+							{
+								// remove row from DOM
+								removeProjectRow($(this).parent().parent());
+							});
+
+							$(document).click( function()
+							{
+								postProjection( lastEdited );
+								recomputeTotals();
+							});
+							$(document).on('keypress', function(e)
+							{
+								var keyCode = e.keyCode || e.which;
+								if( keyCode == 13 )
+								{
+									e.preventDefault();
+									postProjection(lastEdited);
+									recomputeTotals();
+									lastEdited = $(":focus");
+									lastEditedNumber = lastEdited.text();
+								}
+							});
+							$(document).on('keyup', function(e)
+							{
+								var keyCode = e.keyCode || e.which;
+								if( keyCode == 9 )
+								{
+									postProjection(lastEdited);
+									recomputeTotals();
+									lastEdited = $(":focus");
+									lastEditedNumber = lastEdited.text();
+								}
+							});
+							$(".all-expander").click( toggleAllExpander );
 						}
-						else
-							addProjectRow(resourceRow);
 					});
-					$(".project-deleter").click( function()
-					{
-						// remove row from DOM
-						removeProjectRow($(this).parent().parent());
-					});
-					$(document).click( function()
-					{
-						postProjection( lastEdited );
-						recomputeTotals();
-					});
-					$(document).on('keypress', function(e)
-					{
-						var keyCode = e.keyCode || e.which;
-						if( keyCode == 13 )
-						{
-							e.preventDefault();
-							postProjection(lastEdited);
-							recomputeTotals();
-							lastEdited = $(":focus");
-							lastEditedNumber = lastEdited.text();
-						}
-					});
-					$(document).on('keyup', function(e)
-					{
-						var keyCode = e.keyCode || e.which;
-						if( keyCode == 9 )
-						{
-							postProjection(lastEdited);
-							recomputeTotals();
-							lastEdited = $(":focus");
-							lastEditedNumber = lastEdited.text();
-						}
-					});
-					$(".all-expander").click( toggleAllExpander );
 				}
 			});
 		}
@@ -207,7 +218,65 @@ function generateMaxHoursPerMonthView( months )
 	$("thead").append($monthrow);
 }
 
-function generateOverview( data )
+function generateResources( data )
+{
+	for( var i=0; i<data.length; i++ )
+	{
+		addResourceRow( data[i].resource, data[i].last, data[i].first );
+	}
+}
+
+function addResourceRow( id, last, first )
+{
+	var $resourcerow = $("<tr/>", {
+		"class":"resource-row branch",
+		"data-tt-id":id
+	});
+	$resourcerow.append('<td><div class="project-adder">+</div><span class="resource">'+last+', '+first+'</span></td>');
+	// Append the totals to the top row for the resource
+	for( var j=1; j<13; j++ )
+		$resourcerow.append('<td class="number totals" id="'+id+'-'+j+'"></td>');
+	// rows.push($resourcerow);
+	$("#projections-table tbody").append($resourcerow);
+}
+
+function addProjectionRow( resource, project, title, month, hours )
+{
+	var $projectRow = $("tr[data-tt-id="+resource+"-"+project+"]");
+	if( $projectRow.length == 0 )
+		makeBlankProjectRow( resource, project, title );
+	$("td[id="+resource+"-"+project+"-"+month+"]").text(hours);	
+	updateTotal(resource, month, hours);
+}
+
+function updateTotal( resource, month, hours )
+{
+	var totalHours = 0;
+	var totalCell = $("td[id="+resource+"-"+month+"]");
+	var totalCellText = totalCell.text();
+	if( totalCellText != "" )
+		totalHours = parseInt(totalCell.text());
+	totalHours += hours;
+	totalCell.text(totalHours);
+	
+}
+
+function makeBlankProjectRow( resource, project, title )
+{
+	$projectrow = $("<tr>", {
+		"data-tt-id":resource+"-"+project,
+		"data-tt-parent-id":resource,
+		"class" : "project-row leaf collapsed"
+	});
+	$projectrow.append('<td><div class="project-deleter">x</div><span class="project">'+title+'</span></td>');
+	for( var i=1; i<13; i++ )
+	{
+		$projectrow.append('<td id="'+resource+'-'+project+'-'+i+'" class="number editable"></td>');
+	}
+	$("tr[data-tt-id="+resource+"]").after($projectrow);
+}
+
+function generateProjections( data )
 {
 	var totals = {};
 	var rows = [];
@@ -219,104 +288,14 @@ function generateOverview( data )
 	var prevMonth = 0;
 	for( var i=0; i<data.length; i++ )
 	{
-		if( resource != data[i].resource )
-		{
-			if( $projectrow != null )
-			{
-				//console.log("really end month columns from "+(prevMonth+1)+" to 12");
-				if( month+1 < 13 )
-				{
-					for( var j=month+1; j<13; j++ )
-					{
-						$projectrow.append('<td id="'+resource+'-'+project+'-'+j+'" class="number editable"></td>');
-					}
-				}
-				prevMonth = 0;
-				rows.push($projectrow);
-				$projectrow = null;
-			}
-			// New resource, so write out the old resource
-			if( rows.length > 0 )
-			{
-				// Append the totals to the top row for the resource
-				for( var j=1; j<13; j++ )
-				{
-					if( totals[resource][j] == null )
-						$resourcerow.append('<td class="number totals" id="'+resource+'-'+j+'"></td>');
-					else
-						$resourcerow.append('<td class="number totals" id="'+resource+'-'+j+'">'+totals[resource][j]+'</td>');
-				}
-				// Append all the rows to the table
-				for( var r=0; r<rows.length; r++ )
-				{
-					$("tbody").append(rows[r]);
-				}
-				// Reset all the variables we collect for totals
-				rows = [];
-				totalHours = 0;
-			}
-			resource = data[i].resource;
-			totals[resource] = [];
-			// create top table row
-			var $resourcerow = $("<tr/>", {
-				"class":"resource-row branch",
-				"data-tt-id":resource
-			});
-			$resourcerow.append('<td><div class="project-adder">+</div><span class="resource">'+data[i].last+', '+data[i].first+'</span></td>');
-			// delay writing out the resource data until we have totals
-			rows.push($resourcerow);
-			project = "";
-		}
+		var projection = data[i];
+		var resource = projection.resource;
+		var projectId = projection.project;
+		var projectTitle = projection.title;
+		var month = parseInt(projection.month.split("-")[1]);	
+		var hours = projection.hours;
 
-		var dateObj = new Date(data[i].month);
-		var month = parseInt(dateObj.getMonth())+1;
-		if( project != data[i].project ) // New project row
-		{
-			// if there is a projectrow and all the month columns have not been filled out in the previous row
-			// then pad to the end
-			if( $projectrow != null )
-			{
-				// pad the ending month columns
-				if( prevMonth+1 < 13 )
-				{
-					//console.log("end month columns from "+(prevMonth+1)+" to 12");
-					for( var j=prevMonth+1; j<13; j++ )
-					{https://www.google.com/search?client=ubuntu&channel=fs&q=javascript+force+string&ie=utf-8&oe=utf-8
-						$projectrow.append('<td id="'+resource+'-'+project+'-'+j+'" class="number editable"></td>');
-					}
-				}https://www.google.com/search?client=ubuntu&channel=fs&q=javascript+force+string&ie=utf-8&oe=utf-8
-				prevMonth = 0;
-				rows.push($projectrow);
-			}
-			project = data[i].project;
-			// create project row
-			$projectrow = $("<tr>", {
-				"data-tt-id":resource+"-"+project,
-				"data-tt-parent-id":resource,
-				"class" : "project-row leaf collapsed"
-			});
-			$projectrow.append('<td><div class="project-deleter">x</div><span class="project">'+data[i].title+'</span></td>');
-		}
-		// pad month columns from the previous month to the current month
-		if( prevMonth+1 < month )
-		{
-			//console.log("pad month columns from "+(prevMonth+1)+" to "+month);
-			for( var j=prevMonth+1; j<month; j++ )
-			{
-				$projectrow.append('<td id="'+resource+'-'+project+'-'+j+'" class="number editable"></td>');
-			}
-		}
-		hours = data[i].hours;
-		// what if we haven't calculated totals yet?
-		if( totals[resource][month] == null )
-			totals[resource][month] = 0;
-		// calculate totals
-		totals[resource][month] += hours;
-		// add the hours column
-		//console.log("add "+hours+" hours for month "+month);
-		$projectrow.append('<td id="'+resource+'-'+project+'-'+month+'" data-projection-id="'+data[i].projection+'" class="number editable">'+hours+'</td>');
-		prevMonth = month;
-		// delay putting it in the DOM until we have totals
+		addProjectionRow(resource, projectId, projectTitle, month, hours);
 	}
 }
 
