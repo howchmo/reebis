@@ -20,7 +20,7 @@ $(function() {
 					// Generate the view from the data retrieved
 					generateOverview( data.data );
 					// Make it a treetable
-					$("#overview").treetable({ expandable: true })
+					$("#projections").treetable({ expandable: true })
 					$(".editable").attr("contenteditable", "true");
 					$(".editable").click(function(e)
 					{
