@@ -1,4 +1,4 @@
-var lastEdited = null;
+var $lastEdited = null;
 
 $(function() {
 	// Load the data from the web service
@@ -13,50 +13,43 @@ $(function() {
 			$("#project-adder").click(addBlankProjectRow);
 			$(document).click( function()
 			{
-				if( lastEdited == null )
-				{
-					lastEdited = $(":focus");
-				}
-				else
-				{
-					if( lastEdited.text() != "" )
-						postProject( lastEdited );
-				}
+				console.log(lastEdited);
 			});
 			$(document).on('keypress', function(e)
 			{
 				var keyCode = e.keyCode || e.which;
-				if( keyCode == 13 )
+				if( keyCode == 13 ) // ENTER
 				{
+					console.log(lastEdited);
 					e.preventDefault();
-					postProject(lastEdited);
+					postProject(lastEdited.attr("project"), lastEdited.attr("data-col-name"), lastEdited.text());
 					lastEdited = $(":focus");
 				}
 			});
 			$(document).on('keyup', function(e)
 			{
 				var keyCode = e.keyCode || e.which;
-				if( keyCode == 9 )
+				if( keyCode == 9 ) // TAB
 				{
-					postProject(lastEdited);
+					console.log(lastEdited);
+					postProject(lastEdited.attr("project"), lastEdited.attr("data-col-name"), lastEdited.text());
 					lastEdited = $(":focus");
 				}
 			});
-
 		}
 	});
 });
 
-function postProject( projectCell )
+function postProject( projectId, columnName, text )
 {
-	console.log("postProject( "+projectCell+" )");
-	var text = projectCell.text();
-	var projectId = projectCell.attr("project");
+//	var projectId = lastEdited.attr("project");
+//	var columnName = lastEdited.attr("data-col-name");
+//	var text = lastEdited.text();
 	var postMessage = {};
 	if( projectId > -1 )
 	{
 		postMessage["project"] = projectId;
-		postMessage["column"] = projectCell.attr("data-column-name");
+		postMessage["column"] = columnName;
 		postMessage["value"] = text;
 	}
 	else
@@ -84,7 +77,7 @@ function postProject( projectCell )
 					"manager":"",
 					"customer":""
 				};
-	console.log(JSON.stringify(projectObject));
+				console.log(JSON.stringify(projectObject));
 				editRow.remove();
 				// add the new column
 				addProjectRow(projectObject);
@@ -132,7 +125,17 @@ function makeCellsEditable()
 	$(".datepicker").datepicker({
 		changeMonth: true,
 		changeYear: true,
-		dateFormat: "yy-mm-dd"
+		dateFormat: "yy-mm-dd",
+		onSelect: function(dateText) {
+			lastEdited = $($(this)[0]).parent();
+			console.log(lastEdited.attr("project"), lastEdited.attr("data-col-name"), dateText);
+			postProject(lastEdited.attr("project"), lastEdited.attr("data-col-name"), dateText);
+		}
+	});
+	$(".editable").click( function(e) 
+	{
+		lastEdited = $($(this)[0]);
+		e.stopPropagation();
 	});
 }
 
@@ -157,8 +160,6 @@ function addProjectRow( project )
 	}
 	$col.appendTo($row);
 
-	// TITLE
-	console.log("TITLE:"+project.title);
 	var $col = $("<td>", {
 		class: "editable cell-project-title",
 		project: project.project,

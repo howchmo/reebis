@@ -167,8 +167,9 @@ function removeProjections( req, res, next )
 {
 	if( req.body.project != null && req.body.resource != null )
 	{
-		console.log("delete from projections where project="+req.body.project+" and resource="+req.body.resource+";");
-		db.query("delete from projections where project="+req.body.project+" and resource="+req.body.resource+";").then( function( data )
+		var queryString = "delete from projections where project="+req.body.project+" and resource="+req.body.resource+";";
+		console.log(queryString);
+		db.query(queryString).then( function( data )
 		{
 			res.status(200).json(
 			{
@@ -190,12 +191,12 @@ function postProjects( req, res, next )
 	if( req.body.project != null )
 	{
 		// update project with new data
-		var queryStr = "update projects "
+		var queryString = "update projects "
 		// set up updates if the values are included
-		queryStr += "set "+req.body.column+" = '"+req.body.value+"'";
-		queryStr += " where project="+req.body.project+";";
-		console.log(queryStr);
-		db.query(queryStr).then(function( data )
+		queryString += "set "+req.body.column+" = '"+req.body.value+"'";
+		queryString += " where project="+req.body.project+";";
+		console.log(queryString);
+		db.query(queryString).then(function( data )
 		{
 			console.log(data);
 			res.status(200).json(
@@ -211,8 +212,8 @@ function postProjects( req, res, next )
 	}
 	else
 	{
-		var queryStr = "insert into projects (status, title) values ('Active', '"+req.body.title+"');";
-		db.query(queryStr).then(function( data )
+		var queryString = "insert into projects (status, title) values ('Active', '"+req.body.title+"');";
+		db.query(queryString).then(function( data )
 		{
 			console.log(data);
 			db.query("update projects set parent="+data.insertId+" where project="+data.insertId+";");
@@ -226,7 +227,7 @@ function postProjects( req, res, next )
 		{
 			return next(err);
 		});
-		console.log(queryStr);
+		console.log(queryString);
 	}
 }
 
@@ -236,12 +237,12 @@ function postResources( req, res, next )
 	if( req.body.resource != null )
 	{
 		// update project with new data
-		var queryStr = "update resources "
+		var queryString = "update resources "
 		// set up updates if the values are included
-		queryStr += "set "+req.body.column+" = '"+req.body.value+"'";
-		queryStr += " where resource="+req.body.resource+";";
-		console.log(queryStr);
-		db.query(queryStr).then(function( data )
+		queryString += "set "+req.body.column+" = '"+req.body.value+"'";
+		queryString += " where resource="+req.body.resource+";";
+		console.log(queryString);
+		db.query(queryString).then(function( data )
 		{
 			console.log(data);
 			res.status(200).json(
@@ -257,8 +258,8 @@ function postResources( req, res, next )
 	}
 	else
 	{
-		var queryStr = "insert into resources (last) values ('"+req.body.last+"');";
-		db.query(queryStr).then(function( data )
+		var queryString = "insert into resources (last) values ('"+req.body.last+"');";
+		db.query(queryString).then(function( data )
 		{
 			console.log(data);
 			res.status(200).json(
@@ -271,7 +272,7 @@ function postResources( req, res, next )
 		{
 			return next(err);
 		});
-		console.log(queryStr);
+		console.log(queryString);
 	}
 }
 
