@@ -97,9 +97,10 @@ function getMonths( req, res, next )
 function postProjection( req, res, next )
 {
 	console.log(req.body);
-	if( req.body.projection != null )
+	if( req.body.hasOwnProperty("projection") )
 	{
-		db.query("update projections set hours="+req.body.hours+" where projection="+req.body.projection+";").then(function( data )
+		var queryString = "update projections set hours="+req.body.hours+" where projection="+req.body.projection+";";
+		db.query(queryString).then(function( data )
 		{
 			console.log(data);
 			res.status(200).json(
@@ -112,24 +113,53 @@ function postProjection( req, res, next )
 		{
 			return next(err);
 		});
-		console.log("update projections set hours="+req.body.hours+" where projection="+req.body.projection+";");
+		console.log(queryString);
 	}
 	else
 	{
-		db.query("insert into projections (month, project, resource, hours) values ('"+req.body.month+"', "+req.body.project+", "+req.body.resource+", "+req.body.hours+");").then(function( data )
+		db.query("select projection from projections where month='"+req.body.month+"' and resource="+req.body.resource+" and project='"+req.body.project+"';").then( function(data)
 		{
-			console.log(data);
-			res.status(200).json(
+			if( data.length == 0 )
 			{
-				status: 'success',
-				type: 'insert',
-				projection: data.insertId
-			});
+				var queryString = "insert into projections (month, project, resource, hours) values ('"+req.body.month+"', "+req.body.project+", "+req.body.resource+", "+req.body.hours+");";
+				db.query(queryString).then(function( data )
+				{
+					console.log(data);
+					res.status(200).json(
+					{
+						status: 'success',
+						type: 'insert',
+						projection: data.insertId
+					});
+				}).catch( function( err )
+				{
+					return next(err);
+				});
+				console.log(queryString);
+			}
+			else
+			{
+				var projection = data[0].projection;
+				var queryString = "update projections set hours="+req.body.hours+" where projection="+projection+";";
+				db.query(queryString).then(function( data )
+				{
+					console.log(data);
+					res.status(200).json(
+					{
+						status: 'success',
+						type: 'update',
+						projection: projection
+					});
+				}).catch( function( err )
+				{
+					return next(err);
+				});
+				console.log(queryString);
+			}
 		}).catch( function( err )
 		{
 			return next(err);
 		});
-		console.log("insert into projections (month, project, resource, hours) values ('"+req.body.month+"', "+req.body.project+", "+req.body.resource+", "+req.body.hours+");");
 	}
 }
 
