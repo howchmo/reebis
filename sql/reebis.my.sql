@@ -34,7 +34,7 @@ CREATE TABLE projects (
 
 # drop table resources;
 CREATE TABLE resources (
-    resource int(11) NOT NULL,
+    resource int(11) auto_increment NOT NULL,
     first text,
     last text,
     department text,

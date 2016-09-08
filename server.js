@@ -23,7 +23,7 @@ app.use(bodyParser.json());
 
 function getProjections( req, res, next )
 {
-	db.query('select projection, month, projects.project, projects.title, resources.resource, resources.last, resources.first, hours from projections, projects, resources where projections.project=projects.project and resources.resource = projections.resource order by resources.department, resources.last, resources.first, projects.title, month;').then(
+	db.query('select projection, month, projects.project, projects.title, resources.resource, resources.last, resources.first, hours from projections, projects, resources where projections.project=projects.project and resources.resource = projections.resource order by resources.department desc, resources.last desc, resources.first desc, projects.title desc, month;').then(
 		function( data )
 		{
 			res.status(200).json(
@@ -258,7 +258,7 @@ function postResources( req, res, next )
 	}
 	else
 	{
-		var queryString = "insert into resources (last) values ('"+req.body.last+"');";
+		var queryString = "insert into resources (last, first, status) values ('"+req.body.last+"', '"+req.body.first+"', 'active');";
 		db.query(queryString).then(function( data )
 		{
 			console.log(data);

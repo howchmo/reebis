@@ -123,12 +123,14 @@ body {
 	background-image:url('/images/collapsed.png');
 }
 
+.resource-adder,
 .project-adder {
 	float:left;
 	font-weight:bold;
 	color:darkgreen;
 }
 
+.resource-deleter,
 .project-deleter {
 	float:left;
 	font-weight:bold;
