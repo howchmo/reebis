@@ -41,7 +41,7 @@ function getProjections( req, res, next )
 
 function getProjects( req, res, next )
 {
-	var queryString = "select project, parent, status, title, chargenumber, start, end, manager, customer from (select p1.*, case when p2.parent is null then p2.title else p2.title end as parentTitle from projects p1, projects p2 where p1.parent = p2.project) p  order by parentTitle, status desc, title;";
+	var queryString = "select project, parent, status, title, chargenumber, start, end, manager, customer from (select p1.*, case when p2.parent is null then p2.title else p2.title end as parentTitle, case when p2.status='Parent' then 'Active' else p2.status end as parentStatus from projects p1, projects p2 where p1.parent = p2.project) p order by parentStatus, parentTitle, status desc, title;";
 	db.query(queryString).then(
 		function( data )
 		{
