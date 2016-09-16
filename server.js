@@ -41,7 +41,7 @@ function getProjections( req, res, next )
 
 function getProjects( req, res, next )
 {
-	var queryString = "select project, parent, status, title, chargenumber, start, end, manager, customer from (select p1.*, case when p2.parent is null then p2.title else p2.title end as parentTitle, case when p2.status='Parent' then 'Active' else p2.status end as parentStatus from projects p1, projects p2 where p1.parent = p2.project) p order by parentStatus, parentTitle, status desc, title;";
+	var queryString = "select project, parent, p.project_status, project_statuses.name as project_status_name, title, chargenumber, start, end, manager, customer from project_statuses, (select p1.*, case when p2.parent is null then p2.title else p2.title end as parentTitle, case when p2.project_status=1 then 2 else p2.project_status end as parentStatus from projects p1, projects p2 where p1.parent = p2.project) p where p.project_status=project_statuses.project_status order by parentStatus, parentTitle, p.project_status asc, title;";
 	db.query(queryString).then(
 		function( data )
 		{
@@ -212,7 +212,7 @@ function postProjects( req, res, next )
 	}
 	else
 	{
-		var queryString = "insert into projects (status, title) values ('Active', '"+req.body.title+"');";
+		var queryString = "insert into projects (project_status, title) values (2, '"+req.body.title+"');";
 		db.query(queryString).then(function( data )
 		{
 			console.log(data);

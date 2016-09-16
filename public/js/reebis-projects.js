@@ -67,7 +67,7 @@ function postProject( projectId, columnName, text )
 				var editRow = $("tr[data-tt-id='-1']");
 				var titleColumn = editRow.find("td[data-col-name='title']");
 				var projectObject = {
-					"status":"Active",
+					"project_status":"active",
 					"project":data.project,
 					"parent":data.project,
 					"title":titleColumn.text(),
@@ -101,7 +101,7 @@ function addBlankProjectRow()
 	var $col = $("<td>", {
 		project: temporaryProjectId,
 		text: "Active",
-		"data-col-name": "status"
+		"data-col-name": "project_status"
 	});
 	$col.appendTo($row);
 
@@ -146,15 +146,15 @@ function addProjectRow( project )
 	// STATUS
 	var $col = $("<td>", {
 		project: project.project,
-		text: project.status,
-		"data-col-name": "status"
+		text: project.project_status_name,
+		"data-col-name": "project_status"
 	});
 
 	if( project.parent != project.project )
 	{
 		$row.attr("data-tt-parent-id", project.parent);
 	}
-	if( project.status == "Parent" )
+	if( project.project_status == 1 )
 	{
 		$col.text("");
 	}
