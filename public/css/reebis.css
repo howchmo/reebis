@@ -7,7 +7,7 @@
 .month-header > div {
 	transform:translate(15px, 38px)rotate(315deg);
 	height:80px;
-	width:25px;
+	width:15px;
 	margin: 0 auto;
 }
 
@@ -24,10 +24,14 @@ body {
 
 }
 
+.resource-header {
+	width:25%;
+}
 
 #projections-table {
 	width:96% !important;
 	margin:0 auto !important;
+	table-layout: fixed;
 }
 
 .datepicker {

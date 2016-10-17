@@ -102,7 +102,7 @@ function setNewTotal( id, delta )
 	if( delta != 0 && !isNaN(delta) )
 	{
 		var ids = id.split("-");
-		var totalId = ids[0]+"-"+ids[2];
+		var totalId = ids[0]+"-"+ids[2]+"-"+ids[3];
 		var total = $("#"+totalId).text();
 		if( total == "" )
 			total = 0;
@@ -151,11 +151,8 @@ function postProjection( cell )
 				var id = cell.attr('id').split('-');
 				var resource = id[0];
 				var project = id[1];
-				var month = "2016-";
-				if( id[2].length < 2 )
-					month += "0";
-				month += id[2]+"-01";
-				postMessage['month'] = month;
+				var month = id[2]+"-"+id[3]+"-01";
+				postMessage['month'] = month; 
 				postMessage['resource'] = resource;
 				postMessage['project'] = project;
 				postMessage['hours'] = hours;
@@ -187,13 +184,15 @@ function postProjection( cell )
 
 function generateHolidaysView( months )
 {
+	var start = "2016-10-01"; 
+	var end = "2017-09-01";
 	var $monthrow = $("<tr/>", {
 		"class":"holiday-row",
 	});
 	$monthrow.append('<td><div class="holiday-row-label">Holidays</div></td>');
 	for( var j=0; j<12; j++ )
 	{
-		var holidays = months[j].holidays;
+		var holidays = months[j+9].holidays;
 		if( holidays != null )
 			$monthrow.append('<td class="number">'+holidays+'</td>');
 		else
@@ -210,7 +209,7 @@ function generateMaxHoursPerMonthView( months )
 	$monthrow.append('<td><div class="max-row-label">Max Working Hours</div></td>');
 	for( var j=0; j<12; j++ )
 	{
-		var work = months[j].work;
+		var work = months[j+9].work;
 		if( months[j].holidays != null )
 			work -= months[j].holidays;
 		$monthrow.append('<td class="number">'+work+'</td>');
@@ -234,8 +233,10 @@ function addResourceRow( id, last, first )
 	});
 	$resourcerow.append('<td><div class="project-adder">+</div><span class="resource">'+last+', '+first+'</span></td>');
 	// Append the totals to the top row for the resource
-	for( var j=1; j<13; j++ )
-		$resourcerow.append('<td class="number totals" id="'+id+'-'+j+'"></td>');
+	for( var j=10; j<13; j++ )
+		$resourcerow.append('<td class="number totals" id="'+id+'-2016-'+j+'"></td>');
+	for( var j=1; j<10; j++ )
+		$resourcerow.append('<td class="number totals" id="'+id+'-2017-0'+j+'"></td>');
 	// rows.push($resourcerow);
 	$("#projections-table tbody").append($resourcerow);
 }
@@ -269,9 +270,13 @@ function makeBlankProjectRow( resource, project, title )
 		"class" : "project-row leaf collapsed"
 	});
 	$projectrow.append('<td><div class="project-deleter">x</div><span class="project">'+title+'</span></td>');
-	for( var i=1; i<13; i++ )
+	for( var i=10; i<13; i++ )
 	{
-		$projectrow.append('<td id="'+resource+'-'+project+'-'+i+'" class="number editable"></td>');
+		$projectrow.append('<td id="'+resource+'-'+project+'-2016-'+i+'" class="number editable"></td>');
+	}
+	for( var i=1; i<10; i++ )
+	{
+		$projectrow.append('<td id="'+resource+'-'+project+'-2017-0'+i+'" class="number editable"></td>');
 	}
 	$("tr[data-tt-id="+resource+"]").after($projectrow);
 }
@@ -292,7 +297,8 @@ function generateProjections( data )
 		var resource = projection.resource;
 		var projectId = projection.project;
 		var projectTitle = projection.title;
-		var month = parseInt(projection.month.split("-")[1]);	
+		var splitDate = projection.month.split("-");
+		var month = splitDate[0]+"-"+splitDate[1];	
 		var hours = projection.hours;
 
 		addProjectionRow(resource, projectId, projectTitle, month, hours);
@@ -402,9 +408,13 @@ function setProject(projectTitle, projectId)
 	$projectRow.removeAttr("id");
 	$projectRow.attr("id",resourceId+"-"+projectId);
 	$projectRow.removeAttr("id");
-	for( var j=1; j<13; j++ )
+	for( var j=10; j<13; j++ )
 	{
-		$projectRow.append('<td id="'+resourceId+'-'+projectId+'-'+j+'" class="number editable" contenteditable="true"></td>');
+		$projectRow.append('<td id="'+resourceId+'-'+projectId+'-2016-'+j+'" class="number editable" contenteditable="true"></td>');
+	}
+	for( var j=1; j<10; j++ )
+	{
+		$projectRow.append('<td id="'+resourceId+'-'+projectId+'-2017-0'+j+'" class="number editable" contenteditable="true"></td>');
 	}
 
 	//var $node = $("#projections-table").treetable("node", nodeId);
@@ -463,12 +473,21 @@ function removeProjectRow( row )
 {
 	var rowTtId = row.data("ttId");
 	var rowId = row.attr("data-tt-id");
-	//console.log("removeProjectRow( "+rowId+" ) ");
+	console.log("removeProjectRow( "+rowId+" ) ");
 	if( !rowId.includes("?") )
 	{
-		for( var i=1; i<13; i++ )
+		for( var i=10; i<13; i++ )
 		{
-			var id = rowId+"-"+i;
+			var id = rowId+"-2016-"+i;
+			if( $("#"+id) != null )
+			{
+				var delta = -parseInt($("#"+id).text());
+				setNewTotal(id, delta);
+			}
+		}
+		for( var i=1; i<10; i++ )
+		{
+			var id = rowId+"-2017-0"+i;
 			if( $("#"+id) != null )
 			{
 				var delta = -parseInt($("#"+id).text());

@@ -78,7 +78,7 @@ function getResources( req, res, next )
 
 function getMonths( req, res, next )
 {
-	db.query("select * from months where extract(YEAR from month)=2016 order by month;").then(
+	db.query("select * from months order by month;").then(
 		function( data )
 		{
 			res.status(200).json(
