@@ -95,11 +95,11 @@ $(function() {
 
 function setNewTotal( id, delta )
 {
-	//console.log("setNewTotal( "+id+", "+delta+" )");
+	// console.log("setNewTotal( "+id+", "+delta+" )");
 	if( delta != 0 && !isNaN(delta) )
 	{
 		var ids = id.split("-");
-		var totalId = ids[0]+"-"+ids[2];
+		var totalId = ids[0]+"-"+ids[2]+"-"+ids[3];
 		var total = $("#"+totalId).text();
 		if( total == "" )
 			total = 0;
@@ -148,10 +148,7 @@ function postProjection( cell )
 				var id = cell.attr('id').split('-');
 				var project = id[0];
 				var resource = id[1];
-				var month = "2016-";
-				if( id[2].length < 2 )
-					month += "0";
-				month += id[2]+"-01";
+				var month = id[2]+"-"+id[3]+"-01";
 				postMessage['month'] = month;
 				postMessage['resource'] = resource;
 				postMessage['project'] = project;
