@@ -408,18 +408,15 @@ function setProject(projectTitle, projectId)
 	$projectRow.removeAttr("id");
 	$projectRow.attr("id",resourceId+"-"+projectId);
 	$projectRow.removeAttr("id");
+	var html = "";
 	for( var j=10; j<13; j++ )
-	{
-		$projectRow.append('<td id="'+resourceId+'-'+projectId+'-2016-'+j+'" class="number editable" contenteditable="true"></td>');
-	}
+		html += '<td id="'+resourceId+'-'+projectId+'-2016-'+j+'" class="number editable" contenteditable="true"></td>';
 	for( var j=1; j<10; j++ )
-	{
-		$projectRow.append('<td id="'+resourceId+'-'+projectId+'-2017-0'+j+'" class="number editable" contenteditable="true"></td>');
-	}
-
+		html += '<td id="'+resourceId+'-'+projectId+'-2017-0'+j+'" class="number editable" contenteditable="true"></td>';
+	$projectRow.append(html);
 	//var $node = $("#projections-table").treetable("node", nodeId);
 	//$("#projections-table").treetable("loadBranch", $("#projections-table").treetable("node", resource), $projectrow.prop("outerHTML") );
-	console.log("	project row = '"+$projectRow.prop("outerHTML")+"'");
+	console.log("	project row = '"+$projectRow.prop("innerHTML")+"'");
 
 	$(".editable").click(function(e)
 	{

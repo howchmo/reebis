@@ -367,11 +367,12 @@ function setResource(resourceName, resourceId)
 	$resourceRow.removeAttr("id");
 	$resourceRow.attr("id", projectId+"-"+resourceId);
 	$resourceRow.removeAttr("id");
+	var html = "";
 	for( var j=10; j<13; j++ )
-		$resourceRow.append('<td id="'+projectId+'-'+resourceId+'-2016-'+j+'" class="number editable" contenteditable="true"></td>');
+		html += '<td id="'+projectId+'-'+resourceId+'-2016-'+j+'" class="number editable" contenteditable="true"></td>';
 	for( var j=1; j<10; j++ )
-		$resourceRow.append('<td id="'+projectId+'-'+resourceId+'-2017-0'+j+'" class="number editable" contenteditable="true"></td>');
-
+		html += '<td id="'+projectId+'-'+resourceId+'-2017-0'+j+'" class="number editable" contenteditable="true"></td>';
+	$resourceRow.append(html);
 	//var $node = $("#resourceions-table").treetable("node", nodeId);
 	//$("#resourceions-table").treetable("loadBranch", $("#resourceions-table").treetable("node", resource), $resourcerow.prop("outerHTML") );
 	console.log("	resource row = '"+$resourceRow.prop("outerHTML")+"'");
