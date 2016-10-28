@@ -94,6 +94,7 @@ $(function() {
 			});
 		}
 	});
+	$("projects-table").fixedHeaderTable('show');
 });
 
 function setNewTotal( id, delta )
@@ -221,17 +222,18 @@ function generateResources( data )
 {
 	for( var i=0; i<data.length; i++ )
 	{
-		addResourceRow( data[i].resource, data[i].last, data[i].first );
+		addResourceRow( data[i].resource, data[i].last, data[i].first, data[i].department );
 	}
 }
 
-function addResourceRow( id, last, first )
+function addResourceRow( id, last, first, department )
 {
 	var $resourcerow = $("<tr/>", {
 		"class":"resource-row branch",
 		"data-tt-id":id
 	});
-	$resourcerow.append('<td><div class="project-adder">+</div><span class="resource">'+last+', '+first+'</span></td>');
+	var department_color = department+"-color";
+	$resourcerow.append('<td><div class="project-adder">+</div><span class="'+department_color+'">&#x258A;</span><span class="resource">'+last+', '+first+'</span></td>');
 	// Append the totals to the top row for the resource
 	for( var j=10; j<13; j++ )
 		$resourcerow.append('<td class="number totals" id="'+id+'-2016-'+j+'"></td>');
