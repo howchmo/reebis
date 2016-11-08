@@ -113,6 +113,7 @@ function setNewTotal( id, delta )
 		else
 			$("#"+totalId).text(newTotal);
 	}
+	updateTotalStyles(id);
 }
 
 function recomputeTotals()
@@ -265,7 +266,7 @@ function addProjectionRow( resource, project, title, month, hours )
 
 function updateTotal( resource, month, hours )
 {
-	var maxHours = parseInt($("td[id='max-"+month+"']").text());
+	var id=resource+"-"+month;
 	var totalHours = 0;
 	var totalCell = $("td[id="+resource+"-"+month+"]");
 	var totalCellText = totalCell.text();
@@ -276,10 +277,19 @@ function updateTotal( resource, month, hours )
 		totalCell.text("");
 	else
 		totalCell.text(totalHours);
-	if( totalCell.text() == "" )
-		totalCell.addClass("blank");
-	else
-		totalCell.removeClass("blank");
+	updateTotalStyles( id )
+}
+
+function updateTotalStyles( id )
+{
+	var split = id.split("-");
+	var month = split[split.length-2]+"-"+split[split.length-1];
+	var resource = split[0];
+	var totalCell = $("td[id="+resource+"-"+month+"]");
+	var totalHours = parseInt(totalCell.text());
+	var maxHours = parseInt($("td[id='max-"+month+"']").text());
+	console.log( resource+" - "+month+" - "+totalHours + " - "+maxHours);
+	
 	if( totalHours > maxHours )
 	{
 		totalCell.removeClass("correct");
@@ -287,21 +297,21 @@ function updateTotal( resource, month, hours )
 		totalCell.removeClass("under");
 		totalCell.addClass("over");
 	}
-	else if( totalHours < maxHours )
+	if( totalHours < maxHours )
 	{
 		totalCell.removeClass("correct");
 		totalCell.removeClass("blank");
 		totalCell.addClass("under");
 		totalCell.removeClass("over");
 	}
-	else
+	if( totalHours == maxHours )
 	{
 		totalCell.addClass("correct");
 		totalCell.removeClass("blank");
 		totalCell.removeClass("under");
 		totalCell.removeClass("over");
 	}
-	
+	totalCell.trigger("create");
 }
 
 function makeBlankProjectRow( resource, project, title )
