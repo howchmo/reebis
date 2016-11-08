@@ -148,7 +148,7 @@ body {
 }
 
 .ISD-color {
-	color:green;
+	color:silver;
 }
 
 .Mgmt-color {
@@ -161,5 +161,42 @@ body {
 
 .Art-color {
 	color:red;
+}
+
+.IT-color {
+	color:teal;
+}
+
+.project-status-active {
+	background: green;
+}
+
+.project-status-imminent {
+	background: yellow;
+}
+
+.project-status-inactive {
+	background: red;
+}
+
+.project-status-hidden {
+	color:white;
+	background:black;
+}
+
+.blank {
+	background:black;
+}
+
+.under {
+	color:orange;
+}
+
+.over {
+	color:red;
+}
+
+.correct {
+	color:black;
 }
 

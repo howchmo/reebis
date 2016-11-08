@@ -191,13 +191,17 @@ function generateHolidaysView( months )
 		"class":"holiday-row",
 	});
 	$monthrow.append('<td><div class="holiday-row-label">Holidays</div></td>');
-	for( var j=0; j<12; j++ )
+	for( var j=10; j<13; j++ )
 	{
-		var holidays = months[j+9].holidays;
+		var holidays = months[j-1].holidays;
 		if( holidays != null )
-			$monthrow.append('<td class="number">'+holidays+'</td>');
-		else
-			$monthrow.append('<td class="number"></td>');
+			$monthrow.append('<td id="holiday-2016-'+j+'" class="number">'+holidays+'</td>');
+	}
+	for( var j=1; j<10; j++ )
+	{
+		var holidays = months[j+11].holidays;
+		if( holidays != null )
+			$monthrow.append('<td id="holiday-2017-0'+j+'" class="number">'+holidays+'</td>');
 	}
 	$("thead").append($monthrow);
 }
@@ -208,12 +212,19 @@ function generateMaxHoursPerMonthView( months )
 		"class":"max-row",
 	});
 	$monthrow.append('<td><div class="max-row-label">Max Working Hours</div></td>');
-	for( var j=0; j<12; j++ )
+	for( var j=10; j<13; j++ )
 	{
-		var work = months[j+9].work;
-		if( months[j].holidays != null )
-			work -= months[j].holidays;
-		$monthrow.append('<td class="number">'+work+'</td>');
+		var work = months[j-1].work;
+		if( months[j-1].holidays != 0 )
+			work -= months[j-1].holidays;
+		$monthrow.append('<td id="max-2016-'+j+'" class="number">'+work+'</td>');
+	}
+	for( var j=1; j<10; j++ )
+	{
+		var work = months[j+11].work;
+		if( months[j+11].holidays != 0 )
+			work -= months[j+11].holidays;
+		$monthrow.append('<td id="max-2017-0'+j+'" class="number">'+work+'</td>');
 	}
 	$("thead").append($monthrow);
 }
@@ -236,9 +247,9 @@ function addResourceRow( id, last, first, department )
 	$resourcerow.append('<td><div class="project-adder">+</div><span class="'+department_color+'">&#x258A;</span><span class="resource">'+last+', '+first+'</span></td>');
 	// Append the totals to the top row for the resource
 	for( var j=10; j<13; j++ )
-		$resourcerow.append('<td class="number totals" id="'+id+'-2016-'+j+'"></td>');
+		$resourcerow.append('<td class="number totals blank" id="'+id+'-2016-'+j+'"></td>');
 	for( var j=1; j<10; j++ )
-		$resourcerow.append('<td class="number totals" id="'+id+'-2017-0'+j+'"></td>');
+		$resourcerow.append('<td class="number totals blank" id="'+id+'-2017-0'+j+'"></td>');
 	// rows.push($resourcerow);
 	$("#projections-table tbody").append($resourcerow);
 }
@@ -254,13 +265,42 @@ function addProjectionRow( resource, project, title, month, hours )
 
 function updateTotal( resource, month, hours )
 {
+	var maxHours = parseInt($("td[id='max-"+month+"']").text());
 	var totalHours = 0;
 	var totalCell = $("td[id="+resource+"-"+month+"]");
 	var totalCellText = totalCell.text();
 	if( totalCellText != "" )
 		totalHours = parseInt(totalCell.text());
 	totalHours += hours;
-	totalCell.text(totalHours);
+	if( totalHours == 0 )
+		totalCell.text("");
+	else
+		totalCell.text(totalHours);
+	if( totalCell.text() == "" )
+		totalCell.addClass("blank");
+	else
+		totalCell.removeClass("blank");
+	if( totalHours > maxHours )
+	{
+		totalCell.removeClass("correct");
+		totalCell.removeClass("blank");
+		totalCell.removeClass("under");
+		totalCell.addClass("over");
+	}
+	else if( totalHours < maxHours )
+	{
+		totalCell.removeClass("correct");
+		totalCell.removeClass("blank");
+		totalCell.addClass("under");
+		totalCell.removeClass("over");
+	}
+	else
+	{
+		totalCell.addClass("correct");
+		totalCell.removeClass("blank");
+		totalCell.removeClass("under");
+		totalCell.removeClass("over");
+	}
 	
 }
 

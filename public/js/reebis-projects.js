@@ -145,6 +145,7 @@ function addProjectRow( project )
 
 	// STATUS
 	var $col = $("<td>", {
+		class: "project-status-"+project.project_status_name,
 		project: project.project,
 		text: project.project_status_name,
 		"data-col-name": "project_status"
