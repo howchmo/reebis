@@ -30,9 +30,45 @@ body {
 }
 
 #projections-table {
-	width:96% !important;
+	width:100% !important;
 	margin:0 auto !important;
 	table-layout: fixed;
+}
+
+thead {
+	top:0px;
+	position:fixed;
+	width:100%;
+	z-index:20;	
+}
+
+tbody {
+	position:absolute;
+	width:100%;
+	top:180px;
+	
+}
+
+.month-header {
+	width:100px;
+}
+
+.totals {
+	width:100px;
+}
+
+.resource-header {
+	width:400px;
+}
+
+.resource-row-label {
+	width:400px;
+}
+
+.table-title {
+	font-weight: bold;
+	font-size: 14pt;
+	
 }
 
 .datepicker {

@@ -192,7 +192,7 @@ function generateHolidaysView( months )
 		"class":"holiday-row",
 	});
 	$monthrow.append('<td><div class="holiday-row-label">Holidays</div></td>');
-	for( var j=10; j<13; j++ )
+	for( var j=11; j<13; j++ )
 	{
 		var holidays = months[j-1].holidays;
 		if( holidays != null )
@@ -213,7 +213,7 @@ function generateMaxHoursPerMonthView( months )
 		"class":"max-row",
 	});
 	$monthrow.append('<td><div class="max-row-label">Max Working Hours</div></td>');
-	for( var j=10; j<13; j++ )
+	for( var j=11; j<13; j++ )
 	{
 		var work = months[j-1].work;
 		if( months[j-1].holidays != 0 )
@@ -245,9 +245,9 @@ function addResourceRow( id, last, first, department )
 		"data-tt-id":id
 	});
 	var department_color = department+"-color";
-	$resourcerow.append('<td><div class="project-adder">+</div><span class="'+department_color+'">&#x258A;</span><span class="resource">'+last+', '+first+'</span></td>');
+	$resourcerow.append('<td class="resource-row-label"><div class="project-adder">+</div><span class="'+department_color+'">&#x258A;</span><span class="resource">'+last+', '+first+'</span></td>');
 	// Append the totals to the top row for the resource
-	for( var j=10; j<13; j++ )
+	for( var j=11; j<13; j++ )
 		$resourcerow.append('<td class="number totals blank" id="'+id+'-2016-'+j+'"></td>');
 	for( var j=1; j<10; j++ )
 		$resourcerow.append('<td class="number totals blank" id="'+id+'-2017-0'+j+'"></td>');
@@ -322,7 +322,7 @@ function makeBlankProjectRow( resource, project, title )
 		"class" : "project-row leaf collapsed"
 	});
 	$projectrow.append('<td><div class="project-deleter">x</div><span class="project">'+title+'</span></td>');
-	for( var i=10; i<13; i++ )
+	for( var i=11; i<13; i++ )
 	{
 		$projectrow.append('<td id="'+resource+'-'+project+'-2016-'+i+'" class="number editable"></td>');
 	}
@@ -461,7 +461,7 @@ function setProject(projectTitle, projectId)
 	$projectRow.attr("id",resourceId+"-"+projectId);
 	$projectRow.removeAttr("id");
 	var html = "";
-	for( var j=10; j<13; j++ )
+	for( var j=11; j<13; j++ )
 		html += '<td id="'+resourceId+'-'+projectId+'-2016-'+j+'" class="number editable" contenteditable="true"></td>';
 	for( var j=1; j<10; j++ )
 		html += '<td id="'+resourceId+'-'+projectId+'-2017-0'+j+'" class="number editable" contenteditable="true"></td>';
@@ -525,7 +525,7 @@ function removeProjectRow( row )
 	console.log("removeProjectRow( "+rowId+" ) ");
 	if( !rowId.includes("?") )
 	{
-		for( var i=10; i<13; i++ )
+		for( var i=11; i<13; i++ )
 		{
 			var id = rowId+"-2016-"+i;
 			if( $("#"+id) != null )
