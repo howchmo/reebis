@@ -151,9 +151,13 @@ function addProjectRow( project )
 		"data-col-name": "project_status"
 	});
 
+	var superproject = " superproject";
+	var spacing = "";
 	if( project.parent != project.project )
 	{
 		$row.attr("data-tt-parent-id", project.parent);
+		superproject = "";
+		spacing = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
 	}
 	if( project.project_status == 1 )
 	{
@@ -161,10 +165,11 @@ function addProjectRow( project )
 	}
 	$col.appendTo($row);
 
+	// TITLE
 	var $col = $("<td>", {
-		class: "editable cell-project-title",
+		class: "editable cell-project-title"+superproject,
 		project: project.project,
-		text: project.title,
+		html: spacing+project.title,
 		"data-col-name": "title"
 	}).appendTo($row);
 
