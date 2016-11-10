@@ -30,7 +30,7 @@ $(function() {
 							// Make it a treetable
 							$("#projections-table").treetable({ expandable: true })
 							$(".editable").attr("contenteditable", "true");
-							$(".editable").click(function(e)
+							$(".editable").clock(function(e)
 							{
 								postProjection( lastEdited );
 								recomputeTotals();
