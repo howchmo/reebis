@@ -35,14 +35,14 @@ body {
 	table-layout: fixed;
 }
 
-thead {
+.projections-table-header {
 	top:0px;
 	position:fixed;
 	width:100%;
 	z-index:20;	
 }
 
-tbody {
+.projections-table-body {
 	position:absolute;
 	width:100%;
 	top:180px;
@@ -237,3 +237,7 @@ tbody {
 	color:black;
 }
 
+.superproject {
+	font-weight: bold;
+	font-size:115%;
+}
