@@ -27,7 +27,7 @@ $(function() {
 							// Make it a treetable
 							$("#projections-table").treetable({ expandable: true })
 							$(".editable").attr("contenteditable", "true");
-							$(".editable").click(function(e)
+							$(".editable").mousedown(function(e)
 							{
 								postProjection( lastEdited );
 								recomputeTotals();
@@ -58,8 +58,11 @@ $(function() {
 
 							$(document).click( function()
 							{
-								postProjection( lastEdited );
-								recomputeTotals();
+								if( $(":focus").hasClass("editable") == false )
+								{
+									postProjection( lastEdited );
+									recomputeTotals();
+								}
 							});
 							$(document).on('keypress', function(e)
 							{
@@ -377,7 +380,7 @@ function setResource(resourceName, resourceId)
 	//$("#resourceions-table").treetable("loadBranch", $("#resourceions-table").treetable("node", resource), $resourcerow.prop("outerHTML") );
 	console.log("	resource row = '"+$resourceRow.prop("outerHTML")+"'");
 
-	$(".editable").click(function(e)
+	$(".editable").mousedown(function(e)
 	{
 		postProjection( lastEdited );
 		recomputeTotals();

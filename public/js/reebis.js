@@ -30,12 +30,14 @@ $(function() {
 							// Make it a treetable
 							$("#projections-table").treetable({ expandable: true })
 							$(".editable").attr("contenteditable", "true");
-							$(".editable").clock(function(e)
+							$(".editable").mousedown(function(e)
 							{
+								console.log("editable mousedown "+lastEdited);
 								postProjection( lastEdited );
 								recomputeTotals();
 								lastEdited = $(this);
-								lastEditedNumber = $(this).text();
+								console.log("    "+lastEdited.attr("id"));
+								lastEditedNumber = lastEdited.text();
 								e.stopPropagation();
 							});
 							$(".project-adder").click( function()
@@ -61,8 +63,11 @@ $(function() {
 
 							$(document).click( function()
 							{
-								postProjection( lastEdited );
-								recomputeTotals();
+								if( $(":focus").hasClass("editable") == false )
+								{
+									postProjection( lastEdited );
+									recomputeTotals();
+								}
 							});
 							$(document).on('keypress', function(e)
 							{
@@ -94,7 +99,6 @@ $(function() {
 			});
 		}
 	});
-	$("projects-table").fixedHeaderTable('show');
 });
 
 function setNewTotal( id, delta )
@@ -131,8 +135,13 @@ function recomputeTotals()
 		//console.log(lastEdited.text()+" - "+lastEditedNumber);
 		//console.log("difference == \""+difference+"\"");
 		setNewTotal( lastEdited.attr("id"), difference );
+		console.log("recomputeTotals: lastEdited=="+lastEdited.attr("id")+" "+lastEditedNumber);
 		lastEdited = null;
 		lastEditedNumber = "";
+	}
+	else
+	{
+		console.log("recomputeTotals: lastEdited == null");
 	}
 }
 
@@ -288,7 +297,6 @@ function updateTotalStyles( id )
 	var totalCell = $("td[id="+resource+"-"+month+"]");
 	var totalHours = parseInt(totalCell.text());
 	var maxHours = parseInt($("td[id='max-"+month+"']").text());
-	console.log( resource+" - "+month+" - "+totalHours + " - "+maxHours);
 	
 	if( totalHours > maxHours )
 	{
@@ -428,7 +436,6 @@ function projectInputted(e, i)
 			{
 				var projectId = data.project
 				setProject( projectTitle, projectId );
-				console.log(projects);
 				projects.push({"title":projectTitle,"project":projectId});
 			}
 		}
@@ -437,11 +444,8 @@ function projectInputted(e, i)
 
 function projectSelected( e, i )
 {
-	console.log("projectSelected()");
 	var projectTitle = i.text(); // $("select option:selected").text();
-	console.log("	projecTitle = "+projectTitle);
 	var projectId = i.val(); // $("select option:selected").attr("value");
-	console.log("	projectId = "+projectId);
 
 	setProject( projectTitle, projectId );
 }
@@ -451,7 +455,6 @@ function setProject(projectTitle, projectId)
 	var $projectRow = $("#ZZZZZ");
 	// var resourceId = $projectRow.data("ttParentId");
 	var resourceId = $projectRow.attr("data-tt-parent-id");
-	console.log("	resourceId = "+resourceId);
 	//var nodeId = $projectRow.data("ttId");
 	var nodeId = $projectRow.attr("data-tt-Id");
 	$projectRow.find(".project").text(projectTitle);
@@ -468,14 +471,13 @@ function setProject(projectTitle, projectId)
 	$projectRow.append(html);
 	//var $node = $("#projections-table").treetable("node", nodeId);
 	//$("#projections-table").treetable("loadBranch", $("#projections-table").treetable("node", resource), $projectrow.prop("outerHTML") );
-	console.log("	project row = '"+$projectRow.prop("innerHTML")+"'");
 
-	$(".editable").click(function(e)
+	$(".editable").mousedown(function(e)
 	{
 		postProjection( lastEdited );
 		recomputeTotals();
 		lastEdited = $(this);
-		lastEditedNumber = $(this).text();
+		lastEditedNumber = lastEdited.text();
 		e.stopPropagation();
 	});
 	$(".project-deleter").click( function()
@@ -522,7 +524,6 @@ function removeProjectRow( row )
 {
 	var rowTtId = row.data("ttId");
 	var rowId = row.attr("data-tt-id");
-	console.log("removeProjectRow( "+rowId+" ) ");
 	if( !rowId.includes("?") )
 	{
 		for( var i=11; i<13; i++ )
