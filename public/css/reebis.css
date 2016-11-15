@@ -48,6 +48,12 @@ body {
 	top:180px;
 	
 }
+.project-projections-table-body {
+	position:absolute;
+	width:100%;
+	top:120px;
+	
+}
 
 .month-header {
 	width:106px;

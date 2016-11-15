@@ -186,22 +186,27 @@ function generateProjects( data )
 {
 	for( var i=0; i<data.length; i++ )
 	{
-		addProjectRow( data[i].project, data[i].title );
+		addProjectRow( data[i] );
 	}
 }
 
-function addProjectRow( id, title )
+function addProjectRow( data )
 {
 	var $projectrow = $("<tr/>", {
 		"class":"resource-row branch",
-		"data-tt-id":id
+		// "class" : "resource-row branch collapsed",
+		"data-tt-id":data.project
 	});
-	$projectrow.append('<td class="resource-row-label"><div class="resource-adder">+</div><span class="resource">'+title+'</span></td>');
+	if( data.project != data.parent )
+		$projectrow.attr( "data-tt-parent-id", data.parent );
+	var title = data.title;
+	var titleClass = "resource";
+	$projectrow.append('<td class="resource-row-label"><div class="resource-adder">+</div><span class="'+titleClass+'">'+title+'</span></td>');
 	// Append the totals to the top row for the resource
 	for( var j=11; j<13; j++ )
-		$projectrow.append('<td class="number totals" id="'+id+'-2016-'+j+'"></td>');
+		$projectrow.append('<td class="number totals" id="'+data.project+'-2016-'+j+'"></td>');
 	for( var j=1; j<10; j++ )
-		$projectrow.append('<td class="number totals" id="'+id+'-2017-0'+j+'"></td>');
+		$projectrow.append('<td class="number totals" id="'+data.project+'-2017-0'+j+'"></td>');
 	// rows.push($resourcerow);
 	$("#projections-table tbody").append($projectrow);
 }
