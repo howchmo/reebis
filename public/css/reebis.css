@@ -203,19 +203,19 @@ body {
 	color:teal;
 }
 
-.project-status-active {
+.projects-table-status-active {
 	background: green;
 }
 
-.project-status-imminent {
+.projects-table-status-imminent {
 	background: yellow;
 }
 
-.project-status-inactive {
+.projects-table-status-inactive {
 	background: red;
 }
 
-.project-status-hidden {
+.projects-table-status-hidden {
 	color:white;
 	background:black;
 }
@@ -240,4 +240,42 @@ body {
 .superproject {
 	font-weight: bold;
 	font-size:115%;
+}
+
+#projects-table-header {
+	top:0px;
+	position:fixed;
+	width:inherit;
+	z-index:20;
+}
+
+#projects-rows {
+	position:absolute;
+	top:25px;
+}
+
+.projects-table-column {
+	width:8%;
+	min-width:100px;
+}
+
+.projects-table-column-label {
+	width:8% !important;
+	min-width:105px !important;
+}
+
+.projects-table-column-title {
+	width:1200px !important;
+}
+
+.projects-table-column-status {
+	width:100px !important;
+}
+
+.projects-table-column-start {
+	min-width:100px !important;
+}
+
+.projects-table-column-end {
+	min-width:100px !important;
 }

@@ -100,7 +100,7 @@ function addBlankProjectRow()
 	// STATUS
 	var $col = $("<td>", {
 		project: temporaryProjectId,
-		text: "Active",
+		text: "active",
 		"data-col-name": "project_status"
 	});
 	$col.appendTo($row);
@@ -145,7 +145,7 @@ function addProjectRow( project )
 
 	// STATUS
 	var $col = $("<td>", {
-		class: "project-status-"+project.project_status_name,
+		class: "projects-table-column projects-table-column-status projects-table-status-"+project.project_status_name,
 		project: project.project,
 		text: project.project_status_name,
 		"data-col-name": "project_status"
@@ -167,7 +167,7 @@ function addProjectRow( project )
 
 	// TITLE
 	var $col = $("<td>", {
-		class: "editable cell-project-title"+superproject,
+		class: "projects-table-column projects-table-column-title editable cell-project-title"+superproject,
 		project: project.project,
 		html: spacing+project.title,
 		"data-col-name": "title"
@@ -175,7 +175,7 @@ function addProjectRow( project )
 
 	// Charge #
 	var $col = $("<td>", {
-		class: "editable",
+		class: "projects-table-column editable project-table-column-chargenumber",
 		project: project.project,
 		text: project.chargenumber,
 		"data-col-name": "chargenumber"
@@ -186,6 +186,7 @@ function addProjectRow( project )
 	if( project.start != null )
 		popStart = project.start.substring(0,10);
 	var $col = $("<td>", {
+		class: "projects-table-column projects-table-column-start",
 		project: project.project,
 		"data-col-name": "start"
 	}).append('<input type="text" class="datepicker" value='+popStart+'>');
@@ -196,6 +197,7 @@ function addProjectRow( project )
 	if( project.end != null )
 		popEnd = project.end.substring(0,10);
 	var $col = $("<td>", {
+		class: "projects-table-column projects-table-column-end",
 		project: project.project,
 		"data-col-name": "end"
 	}).append('<input type="text" class="datepicker" value='+popEnd+'>');
@@ -203,14 +205,14 @@ function addProjectRow( project )
 
 
 	var $col = $("<td>", {
-		class: "editable",
+		class: "projects-table-column editable projects-table-column-manager",
 		project: project.project,
 		text: project.manager,
 		"data-col-name": "manager"
 	}).appendTo($row);
 
 	var $col = $("<td>", {
-		class: "editable",
+		class: "projects-table-column editable projects-table-column-customer",
 		project: project.project,
 		text: project.customer,
 		"data-col-name": "customer"
