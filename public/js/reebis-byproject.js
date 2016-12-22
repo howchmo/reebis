@@ -96,6 +96,11 @@ $(function() {
 	});
 });
 
+function pad( number, padwith, padCount )
+{
+	return ("0"+number).slice(-2);
+}
+
 function setNewTotal( id, delta )
 {
 	// console.log("setNewTotal( "+id+", "+delta+" )");
@@ -203,10 +208,8 @@ function addProjectRow( data )
 	var titleClass = "resource";
 	$projectrow.append('<td class="resource-row-label"><div class="resource-adder">+</div><span class="'+titleClass+'">'+title+'</span></td>');
 	// Append the totals to the top row for the resource
-	for( var j=11; j<13; j++ )
-		$projectrow.append('<td class="number totals" id="'+data.project+'-2016-'+j+'"></td>');
-	for( var j=1; j<10; j++ )
-		$projectrow.append('<td class="number totals" id="'+data.project+'-2017-0'+j+'"></td>');
+	for( var j=1; j<13; j++ )
+		$projectrow.append('<td class="number totals" id="'+data.project+'-2017-'+pad(j)+'"></td>');
 	// rows.push($resourcerow);
 	$("#projections-table tbody").append($projectrow);
 }
@@ -240,10 +243,8 @@ function makeBlankResourceRow( resource, project, title )
 		"class" : "project-row leaf collapsed"
 	});
 	$resourcerow.append('<td><div class="resource-deleter">x</div><span class="project">'+title+'</span></td>');
-	for( var i=11; i<13; i++ )
-		$resourcerow.append('<td id="'+project+'-'+resource+'-2016-'+i+'" class="number editable"></td>');
-	for( var i=1; i<10; i++ )
-		$resourcerow.append('<td id="'+project+'-'+resource+'-2017-0'+i+'" class="number editable"></td>');
+	for( var i=1; i<13; i++ )
+		$resourcerow.append('<td id="'+project+'-'+resource+'-2017-'+pad(i)+'" class="number editable"></td>');
 	$("tr[data-tt-id="+project+"]").after($resourcerow);
 }
 
@@ -376,10 +377,8 @@ function setResource(resourceName, resourceId)
 	$resourceRow.attr("id", projectId+"-"+resourceId);
 	$resourceRow.removeAttr("id");
 	var html = "";
-	for( var j=11; j<13; j++ )
-		html += '<td id="'+projectId+'-'+resourceId+'-2016-'+j+'" class="number editable" contenteditable="true"></td>';
-	for( var j=1; j<10; j++ )
-		html += '<td id="'+projectId+'-'+resourceId+'-2017-0'+j+'" class="number editable" contenteditable="true"></td>';
+	for( var j=1; j<13; j++ )
+		html += '<td id="'+projectId+'-'+resourceId+'-2017-'+pad(j)+'" class="number editable" contenteditable="true"></td>';
 	$resourceRow.append(html);
 	//var $node = $("#resourceions-table").treetable("node", nodeId);
 	//$("#resourceions-table").treetable("loadBranch", $("#resourceions-table").treetable("node", resource), $resourcerow.prop("outerHTML") );
@@ -440,18 +439,9 @@ function removeRow( row )
 	//console.log("removeRow( "+rowId+" ) ");
 	if( !rowId.includes("?") )
 	{
-		for( var i=11; i<13; i++ )
+		for( var i=1; i<13; i++ )
 		{
-			var id = rowId+"-2016-"+i;
-			if( $("#"+id) != null )
-			{
-				var delta = -parseInt($("#"+id).text());
-				setNewTotal(id, delta);
-			}
-		}
-		for( var i=1; i<10; i++ )
-		{
-			var id = rowId+"-2017-0"+i;
+			var id = rowId+"-2017-"+pad(i);
 			if( $("#"+id) != null )
 			{
 				var delta = -parseInt($("#"+id).text());

@@ -100,17 +100,20 @@ body {
 	text-align:center;
 }
 
-/* .number:empty {
+/*
+.number:empty {
 	background-color:black;
-} */
+}
+*/
 
 .project-row:hover {
 	background-color:#a9efe7 !important;
+	border:1px solid #a9efe7 !important;
 }
 
 .resource-row:hover {
-
 	background-color:#29d6c2 !important;
+	border:1px solid #29d6c2 !important;
 }
 
 .totals {
@@ -232,11 +235,13 @@ body {
 }
 
 .under {
-	color:orange;
+	background:orange;
+	color:black;
 }
 
 .over {
-	color:red;
+	background:red;
+	color:black;
 }
 
 .correct {

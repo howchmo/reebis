@@ -23,7 +23,7 @@ app.use(bodyParser.json());
 
 function getProjections( req, res, next )
 {
-	db.query('select projection, month, projects.project, projects.title, resources.resource, resources.last, resources.first, hours from projections, projects, resources where projections.project=projects.project and resources.resource = projections.resource order by resources.department desc, resources.last desc, resources.first desc, projects.title desc, month;').then(
+	db.query('select projection, month, projects.project, projects.title, resources.resource, resources.last, resources.first, hours from projections, projects, resources where projections.project=projects.project and resources.resource = projections.resource and month > "2016-12-01" order by resources.department desc, resources.last desc, resources.first desc, projects.title desc, month;').then(
 		function( data )
 		{
 			res.status(200).json(
@@ -60,7 +60,7 @@ function getProjects( req, res, next )
 
 function getResources( req, res, next )
 {
-	db.query('select * from resources;').then(
+	db.query('select * from resources order by department, last;').then(
 		function( data )
 		{
 			res.status(200).json(

@@ -195,23 +195,18 @@ function postProjection( cell )
 
 function generateHolidaysView( months )
 {
-	var start = "2016-10-01"; 
-	var end = "2017-09-01";
+	var start = "2017-01-01"; 
+	var end = "2017-12-01";
 	var $monthrow = $("<tr/>", {
 		"class":"holiday-row",
 	});
 	$monthrow.append('<td><div class="holiday-row-label">Holidays</div></td>');
-	for( var j=11; j<13; j++ )
+	for( var j=1; j<13; j++ )
 	{
 		var holidays = months[j-1].holidays;
+		var monthString = ("0"+j).slice(-2);
 		if( holidays != null )
-			$monthrow.append('<td id="holiday-2016-'+j+'" class="number">'+holidays+'</td>');
-	}
-	for( var j=1; j<10; j++ )
-	{
-		var holidays = months[j+11].holidays;
-		if( holidays != null )
-			$monthrow.append('<td id="holiday-2017-0'+j+'" class="number">'+holidays+'</td>');
+			$monthrow.append('<td id="holiday-2017-'+monthString+'" class="number">'+holidays+'</td>');
 	}
 	$("thead").append($monthrow);
 }
@@ -222,19 +217,13 @@ function generateMaxHoursPerMonthView( months )
 		"class":"max-row",
 	});
 	$monthrow.append('<td><div class="max-row-label">Max Working Hours</div></td>');
-	for( var j=11; j<13; j++ )
+	for( var j=1; j<13; j++ )
 	{
 		var work = months[j-1].work;
 		if( months[j-1].holidays != 0 )
 			work -= months[j-1].holidays;
-		$monthrow.append('<td id="max-2016-'+j+'" class="number">'+work+'</td>');
-	}
-	for( var j=1; j<10; j++ )
-	{
-		var work = months[j+11].work;
-		if( months[j+11].holidays != 0 )
-			work -= months[j+11].holidays;
-		$monthrow.append('<td id="max-2017-0'+j+'" class="number">'+work+'</td>');
+		var monthString = ("0"+j).slice(-2);
+		$monthrow.append('<td id="max-2017-'+monthString+'" class="number">'+work+'</td>');
 	}
 	$("thead").append($monthrow);
 }
@@ -256,10 +245,11 @@ function addResourceRow( id, last, first, department )
 	var department_color = department+"-color";
 	$resourcerow.append('<td class="resource-row-label"><div class="project-adder">+</div><span class="'+department_color+'">&#x258A;</span><span class="resource">'+last+', '+first+'</span></td>');
 	// Append the totals to the top row for the resource
-	for( var j=11; j<13; j++ )
-		$resourcerow.append('<td class="number totals blank" id="'+id+'-2016-'+j+'"></td>');
-	for( var j=1; j<10; j++ )
-		$resourcerow.append('<td class="number totals blank" id="'+id+'-2017-0'+j+'"></td>');
+	for( var j=1; j<13; j++ )
+	{
+		var monthString = ("0"+j).slice(-2);
+		$resourcerow.append('<td class="number totals blank" id="'+id+'-2017-'+monthString+'"></td>');
+	}
 	// rows.push($resourcerow);
 	$("#projections-table tbody").append($resourcerow);
 }
@@ -330,13 +320,10 @@ function makeBlankProjectRow( resource, project, title )
 		"class" : "project-row leaf collapsed"
 	});
 	$projectrow.append('<td><div class="project-deleter">x</div><span class="project">'+title+'</span></td>');
-	for( var i=11; i<13; i++ )
+	for( var i=1; i<13; i++ )
 	{
-		$projectrow.append('<td id="'+resource+'-'+project+'-2016-'+i+'" class="number editable"></td>');
-	}
-	for( var i=1; i<10; i++ )
-	{
-		$projectrow.append('<td id="'+resource+'-'+project+'-2017-0'+i+'" class="number editable"></td>');
+		var monthString = ("0"+i).slice(-2);
+		$projectrow.append('<td id="'+resource+'-'+project+'-2017-'+monthString+'" class="number editable"></td>');
 	}
 	$("tr[data-tt-id="+resource+"]").after($projectrow);
 }
@@ -464,10 +451,11 @@ function setProject(projectTitle, projectId)
 	$projectRow.attr("id",resourceId+"-"+projectId);
 	$projectRow.removeAttr("id");
 	var html = "";
-	for( var j=11; j<13; j++ )
-		html += '<td id="'+resourceId+'-'+projectId+'-2016-'+j+'" class="number editable" contenteditable="true"></td>';
-	for( var j=1; j<10; j++ )
-		html += '<td id="'+resourceId+'-'+projectId+'-2017-0'+j+'" class="number editable" contenteditable="true"></td>';
+	for( var j=1; j<13; j++ )
+	{
+		var monthString = ("0"+j).slice(-2);
+		html += '<td id="'+resourceId+'-'+projectId+'-2017-'+monthString+'" class="number editable" contenteditable="true"></td>';
+	}
 	$projectRow.append(html);
 	//var $node = $("#projections-table").treetable("node", nodeId);
 	//$("#projections-table").treetable("loadBranch", $("#projections-table").treetable("node", resource), $projectrow.prop("outerHTML") );
@@ -526,18 +514,10 @@ function removeProjectRow( row )
 	var rowId = row.attr("data-tt-id");
 	if( !rowId.includes("?") )
 	{
-		for( var i=11; i<13; i++ )
+		for( var i=1; i<13; i++ )
 		{
-			var id = rowId+"-2016-"+i;
-			if( $("#"+id) != null )
-			{
-				var delta = -parseInt($("#"+id).text());
-				setNewTotal(id, delta);
-			}
-		}
-		for( var i=1; i<10; i++ )
-		{
-			var id = rowId+"-2017-0"+i;
+			var monthString = ("0"+i).slice(-2);
+			var id = rowId+"-2017-"+monthString;
 			if( $("#"+id) != null )
 			{
 				var delta = -parseInt($("#"+id).text());
