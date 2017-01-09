@@ -254,13 +254,33 @@ function addResourceRow( id, last, first, department )
 	$("#projections-table tbody").append($resourcerow);
 }
 
-function addProjectionRow( resource, project, title, month, hours )
+function addProjectionRow( resource, project, title, month, hours, project_status )
 {
 	var $projectRow = $("tr[data-tt-id="+resource+"-"+project+"]");
 	if( $projectRow.length == 0 )
-		makeBlankProjectRow( resource, project, title );
-	$("td[id="+resource+"-"+project+"-"+month+"]").text(hours);	
+		makeBlankProjectRow( resource, project, title, project_status );
+	$("td[id="+resource+"-"+project+"-"+month+"]").text(hours);
+	if( project_status == 3 )
+	{
+		$projectRow.addClass("speculation");
+		$("td[id="+resource+"-"+project+"-"+month+"]").addClass("speculation");
+	}
 	updateTotal(resource, month, hours);
+}
+
+function isSpeculation( resource, month )
+{
+	var $resourceMonths = $("td[id^="+resource+"-][id$=-"+month+"]");
+	console.log("length = "+$resourceMonths.length);
+	for( var i=1; i<$resourceMonths.length; i++ )
+	{
+		console.log($($resourceMonths[i]).attr("id")+" - '"+$($resourceMonths[i]).text()+"'");
+		if( $($resourceMonths[i]).hasClass("speculation") && $($resourceMonths[i]).text() != "" && $($resourceMonths[i]).text() != "0" )
+		{
+			return true;
+		}
+	}
+	return false;
 }
 
 function updateTotal( resource, month, hours )
@@ -288,6 +308,7 @@ function updateTotalStyles( id )
 	var totalHours = parseInt(totalCell.text());
 	var maxHours = parseInt($("td[id='max-"+month+"']").text());
 	
+	totalCell.removeClass("speculation");
 	if( totalHours > maxHours )
 	{
 		totalCell.removeClass("correct");
@@ -309,21 +330,37 @@ function updateTotalStyles( id )
 		totalCell.removeClass("under");
 		totalCell.removeClass("over");
 	}
+	
+	if( isSpeculation( resource, month ) )
+	{
+		totalCell.addClass("speculation");
+		totalCell.removeClass("correct");
+		totalCell.removeClass("blank");
+		totalCell.removeClass("under");
+		totalCell.removeClass("over");
+	}	
+
 	totalCell.trigger("create");
 }
 
-function makeBlankProjectRow( resource, project, title )
+function makeBlankProjectRow( resource, project, title, project_status )
 {
 	$projectrow = $("<tr>", {
 		"data-tt-id":resource+"-"+project,
 		"data-tt-parent-id":resource,
 		"class" : "project-row leaf collapsed"
 	});
+	if( project_status == 3 )
+		$($projectrow).addClass("speculation");
 	$projectrow.append('<td><div class="project-deleter">x</div><span class="project">'+title+'</span></td>');
 	for( var i=1; i<13; i++ )
 	{
 		var monthString = ("0"+i).slice(-2);
-		$projectrow.append('<td id="'+resource+'-'+project+'-2017-'+monthString+'" class="number editable"></td>');
+		if( project_status == 3 )
+			$projectrow.append('<td id="'+resource+'-'+project+'-2017-'+monthString+'" class="number editable speculation"></td>');
+		else
+			$projectrow.append('<td id="'+resource+'-'+project+'-2017-'+monthString+'" class="number editable"></td>');
+
 	}
 	$("tr[data-tt-id="+resource+"]").after($projectrow);
 }
@@ -347,8 +384,9 @@ function generateProjections( data )
 		var splitDate = projection.month.split("-");
 		var month = splitDate[0]+"-"+splitDate[1];	
 		var hours = projection.hours;
+		var project_status = projection.project_status;
 
-		addProjectionRow(resource, projectId, projectTitle, month, hours);
+		addProjectionRow(resource, projectId, projectTitle, month, hours, project_status);
 	}
 }
 
@@ -433,11 +471,13 @@ function projectSelected( e, i )
 {
 	var projectTitle = i.text(); // $("select option:selected").text();
 	var projectId = i.val(); // $("select option:selected").attr("value");
+	var projectStatus = i.attr("project_status");
+	console.log("project_status = "+projectStatus);
 
-	setProject( projectTitle, projectId );
+	setProject( projectTitle, projectId, projectStatus );
 }
 
-function setProject(projectTitle, projectId)
+function setProject(projectTitle, projectId, projectStatus )
 {
 	var $projectRow = $("#ZZZZZ");
 	// var resourceId = $projectRow.data("ttParentId");
@@ -454,7 +494,10 @@ function setProject(projectTitle, projectId)
 	for( var j=1; j<13; j++ )
 	{
 		var monthString = ("0"+j).slice(-2);
-		html += '<td id="'+resourceId+'-'+projectId+'-2017-'+monthString+'" class="number editable" contenteditable="true"></td>';
+		if( projectStatus == 3 )
+			html += '<td id="'+resourceId+'-'+projectId+'-2017-'+monthString+'" class="number editable speculation" contenteditable="true"></td>';
+		else
+			html += '<td id="'+resourceId+'-'+projectId+'-2017-'+monthString+'" class="number editable" contenteditable="true"></td>';
 	}
 	$projectRow.append(html);
 	//var $node = $("#projections-table").treetable("node", nodeId);
@@ -502,6 +545,7 @@ function createProjectSelector( exclusions )
 		if( exclusions.indexOf(projectId.toString()) < 0 )
 		{
 			var $option = $("<option>", {"value":projectId}).text(projectTitle);
+			$option.attr("project_status", projects[i].project_status);
 			$projectSelector.append($option);
 		}
 	}

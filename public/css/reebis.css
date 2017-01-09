@@ -244,6 +244,10 @@ body {
 	color:black;
 }
 
+.speculation {
+	background: grey;
+}
+
 .correct {
 	color:black;
 }
