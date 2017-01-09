@@ -1,11 +1,7 @@
--- MySQL dump 10.15  Distrib 10.0.25-MariaDB, for debian-linux-gnu (x86_64)
---
 -- Host: localhost    Database: reebis
 -- ------------------------------------------------------
 -- Server version	10.0.25-MariaDB-0ubuntu0.16.04.1
 
-/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
-/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
 /*!40101 SET NAMES utf8mb4 */;
 /*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
@@ -28,7 +24,6 @@ CREATE TABLE `months` (
   `holidays` int(11) DEFAULT NULL,
   PRIMARY KEY (`month`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `project_statuses`
@@ -41,7 +36,7 @@ CREATE TABLE `project_statuses` (
   `project_status` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(64) DEFAULT NULL,
   PRIMARY KEY (`project_status`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -60,7 +55,7 @@ CREATE TABLE `projections` (
   `percent` double DEFAULT NULL,
   `note` text,
   PRIMARY KEY (`projection`)
-) ENGINE=InnoDB AUTO_INCREMENT=296 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=3604 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -82,10 +77,8 @@ CREATE TABLE `projects` (
   `description` text,
   `project_status` int(11) DEFAULT NULL,
   PRIMARY KEY (`project`),
-  KEY `parent` (`parent`),
-  KEY `fk_projects_project_status` (`project_status`),
-  CONSTRAINT `fk_projects_project_status` FOREIGN KEY (`project_status`) REFERENCES `project_statuses` (`project_status`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=59 DEFAULT CHARSET=utf8;
+  KEY `parent` (`parent`)
+) ENGINE=InnoDB AUTO_INCREMENT=178 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -96,14 +89,15 @@ DROP TABLE IF EXISTS `resources`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `resources` (
-  `resource` int(11) NOT NULL,
+  `resource` int(11) NOT NULL AUTO_INCREMENT,
   `first` text,
   `last` text,
   `department` text,
   `category` text,
   `supervisor` text,
-  `status` text
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  `status` text,
+  PRIMARY KEY (`resource`)
+) ENGINE=InnoDB AUTO_INCREMENT=1039 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -115,4 +109,4 @@ CREATE TABLE `resources` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2016-09-16 13:07:58
+-- Dump completed on 2017-01-09 12:07:43
