@@ -470,9 +470,9 @@ function projectInputted(e, i)
 function projectSelected( e, i )
 {
 	var projectTitle = i.text(); // $("select option:selected").text();
+	console.log("projectTitle = '"+projectTitle+"'");
 	var projectId = i.val(); // $("select option:selected").attr("value");
 	var projectStatus = i.attr("project_status");
-	console.log("project_status = "+projectStatus);
 
 	setProject( projectTitle, projectId, projectStatus );
 }
@@ -490,6 +490,8 @@ function setProject(projectTitle, projectId, projectStatus )
 	$projectRow.removeAttr("id");
 	$projectRow.attr("id",resourceId+"-"+projectId);
 	$projectRow.removeAttr("id");
+	if( projectStatus == 3 )
+		$projectRow.addClass("speculation");
 	var html = "";
 	for( var j=1; j<13; j++ )
 	{
@@ -540,8 +542,11 @@ function createProjectSelector( exclusions )
 	for( var i=0; i<projects.length; i++ )
 	{
 		var projectId = projects[i].project;
-		var projectTitle = projects[i].title;
-		//console.log(projectId);
+		var projectTitle = "";
+		if( projects[i].parent != projects[i].project )
+			projectTitle += "<span style='font-size:8pt'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"+projects[i].title+"<span>";
+		else
+			projectTitle = "<span style='font-weight:bold'>"+projects[i].title+"</span>";
 		if( exclusions.indexOf(projectId.toString()) < 0 )
 		{
 			var $option = $("<option>", {"value":projectId}).text(projectTitle);
