@@ -188,6 +188,26 @@ body {
 	font-size:8pt;
 }
 
+.dept-Engineering {
+}
+
+.dept-ISD {
+}
+
+.dept-Mgmt {
+}
+
+.dept-QA {
+	display:none !important;
+}
+
+.dept-Art {
+}
+
+.dept-IT {
+	display:none !important;
+}
+
 .Engineering-color {
 	color:blue;
 }

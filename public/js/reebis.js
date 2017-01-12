@@ -239,7 +239,7 @@ function generateResources( data )
 function addResourceRow( id, last, first, department )
 {
 	var $resourcerow = $("<tr/>", {
-		"class":"resource-row branch",
+		"class":"resource-row branch dept-"+department,
 		"data-tt-id":id
 	});
 	var department_color = department+"-color";
