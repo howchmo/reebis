@@ -272,6 +272,14 @@ body {
 	color:black;
 }
 
+.correct-utilization {
+	background:green;
+}
+
+.blank-utilization {
+	background:white;
+}
+
 .superproject {
 	font-weight: bold;
 	font-size:115%;
