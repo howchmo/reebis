@@ -1,4 +1,5 @@
 var fs = require('fs');
+var json2csv = require('json2csv');
 var express = require('express');
 var promise = require('promise');
 var app = express();
@@ -276,6 +277,27 @@ function postResources( req, res, next )
 	}
 }
 
+function getUtilization( req, res, next )
+{
+	db.query('select CONCAT(resources.last, ", ", resources.first, " ", SUBSTRING(MONTHNAME(projections.month),1,3)) as monthname, sum(projections.hours) as hours from resources, projections where resources.resource = projections.resource and projections.month > "2017-01-01" group by monthname order by resources.department, resources.last, projections.month;').then(
+		function( data )
+		{
+			var csvfile = json2csv({data:data, fields: ['monthname', 'hours'], hasCSVColumnTitle: false, del: '\t', quotes:''});
+			res.status(200).send( csvfile );
+/*
+			{
+				status: 'success',
+				data: data,
+				message: 'Retrieved Total Hours utilization'
+			});
+*/
+		}
+	).catch( function(err)
+	{
+		return next(err);
+	});
+}
+
 app.get('/projections', getProjections);
 app.get('/projects', getProjects);
 app.post('/projects', postProjects);
@@ -284,6 +306,7 @@ app.post('/resources', postResources)
 app.get('/months', getMonths);
 app.post('/projections', postProjection);
 app.delete('/projections', removeProjections);
+app.get('/utilization', getUtilization);
 
 app.use( '/', express.static(__dirname+'/public'));
 app.use( '/scripts', express.static(__dirname+'/node_modules'));

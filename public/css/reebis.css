@@ -197,15 +197,13 @@ body {
 .dept-Mgmt {
 }
 
-.dept-QA {
-	display:none !important;
-}
-
 .dept-Art {
 }
 
 .dept-IT {
-	display:none !important;
+}
+
+.dept-QA {
 }
 
 .Engineering-color {
