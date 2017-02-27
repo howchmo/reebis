@@ -61,7 +61,7 @@ function getProjects( req, res, next )
 
 function getResources( req, res, next )
 {
-	db.query('select * from resources order by department, last;').then(
+	db.query('select * from resources where status="active" order by department, last;').then(
 		function( data )
 		{
 			res.status(200).json(
