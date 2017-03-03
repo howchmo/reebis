@@ -61,14 +61,31 @@ function getProjects( req, res, next )
 
 function getResources( req, res, next )
 {
-	db.query('select * from resources where status="active" order by department, last;').then(
+	var sql = "select * from resources";
+	var addand = false;
+	if( req.query.status != undefined )
+	{
+		sql += ' where status="'+req.query.status+'"';
+		addand = true;
+	}
+	if( req.query.department != undefined )
+	{
+		if( addand )
+			sql += ' and ';
+		else
+			sql += ' where ';
+		sql += 'department="'+req.query.department+'"';
+	}
+	sql += " order by department, last;";
+	
+	db.query(sql).then(
 		function( data )
 		{
 			res.status(200).json(
 			{
 				status: 'success',
 				data: data,
-				message: 'Retrieved projects'
+				message: 'Retrieved resources'
 			});
 		}
 	).catch( function(err)
@@ -279,7 +296,14 @@ function postResources( req, res, next )
 
 function getUtilization( req, res, next )
 {
-	db.query('select CONCAT(resources.last, ", ", resources.first, " ", SUBSTRING(MONTHNAME(projections.month),1,3)) as monthname, sum(projections.hours) as hours from resources, projections where resources.resource = projections.resource and projections.month > "2017-01-01" group by monthname order by resources.department, resources.last, projections.month;').then(
+	var sql = 'select CONCAT(resources.last, ", ", resources.first, " ", SUBSTRING(MONTHNAME(projections.month),1,3)) as monthname, sum(projections.hours) as hours from resources, projections where resources.resource = projections.resource and projections.month > "2017-01-01" ';
+
+	if( req.query.department != undefined )
+	{
+		sql += ' and department="'+req.query.department+'"';
+	}
+	sql += ' group by monthname order by resources.department, resources.last, projections.month;';
+	db.query(sql).then(
 		function( data )
 		{
 			var csvfile = json2csv({data:data, fields: ['monthname', 'hours'], hasCSVColumnTitle: false, del: '\t', quotes:''});

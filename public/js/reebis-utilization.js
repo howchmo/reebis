@@ -3,6 +3,19 @@ var lastEditedNumber = "";
 var collapsed = true;
 var projects = null;
 
+function getUrlVars()
+{
+    var vars = [], hash;
+    var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
+    for(var i = 0; i < hashes.length; i++)
+    {
+        hash = hashes[i].split('=');
+        vars.push(hash[0]);
+        vars[hash[0]] = hash[1];
+    }
+    return vars;
+}
+
 $(function() {
 	// Load the data from the web service
 	$.ajax( {
@@ -12,9 +25,13 @@ $(function() {
 		{
 			generateHolidaysView( data.data );
 			generateMaxHoursPerMonthView( data.data );
+			var queryParams = getUrlVars();
+			var urlStr = '/resources';
+			if( queryParams.department != undefined )
+				urlStr += '?department='+queryParams.department+'&status=active';
 			$.ajax({
 				type: 'Get',
-				url: '/resources',
+				url: urlStr,
 				success: function( data )
 				{
 					generateResources(data.data);
