@@ -230,7 +230,7 @@ function postProjects( req, res, next )
 	}
 	else
 	{
-		var queryString = "insert into projects (project_status, title) values (2, '"+req.body.title+"');";
+		var queryString = "insert into projects (project_status, title) values (1, '"+req.body.title+"');";
 		db.query(queryString).then(function( data )
 		{
 			console.log(data);
