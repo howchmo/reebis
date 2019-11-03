@@ -2,6 +2,7 @@ var lastEdited = null;
 var lastEditedNumber = "";
 var collapsed = true;
 var resources = null;
+var year = '2020';
 
 $(function() {
 	// Load the data from the web service
@@ -209,7 +210,8 @@ function addProjectRow( data )
 	$projectrow.append('<td class="resource-row-label"><div class="resource-adder">+</div><span class="'+titleClass+'">'+title+'</span></td>');
 	// Append the totals to the top row for the resource
 	for( var j=1; j<13; j++ )
-		$projectrow.append('<td class="number totals" id="'+data.project+'-2017-'+pad(j)+'"></td>');
+		$projectrow.append('<td class="number totals" id="'+data.project+'-'+year+'-'+pad(j)+'"></td>');
+	$projectrow.append('<td class="number totals-project" id="'+data.project+'-total"></td>');
 	// rows.push($resourcerow);
 	$("#projections-table tbody").append($projectrow);
 }
@@ -220,10 +222,12 @@ function addProjectionRow( resource, project, title, month, hours )
 	if( $resourceRow.length == 0 )
 		makeBlankResourceRow( resource, project, title );
 	$("td[id="+project+"-"+resource+"-"+month+"]").text(hours);
-	updateTotal(project, month, hours);
+	updateProjectMonthlyTotal(project, month, hours);
+	updateResourceProjectTotal(project, resource, hours);
+	updateProjectTotal(project, hours);
 }
 
-function updateTotal( project, month, hours )
+function updateProjectMonthlyTotal( project, month, hours )
 {
 	var totalHours = 0;
 	var totalCell = $("td[id="+project+"-"+month+"]");
@@ -232,7 +236,28 @@ function updateTotal( project, month, hours )
 		totalHours = parseInt(totalCell.text());
 	totalHours += hours;
 	totalCell.text(totalHours);
-	
+}
+
+function updateResourceProjectTotal( project, resource, hours )
+{
+	var totalHours = 0;
+	var totalCell = $("td[id="+project+"-"+resource+"-total]");
+	var totalCellText = totalCell.text();
+	if( totalCellText != "" )
+		totalHours = parseInt(totalCell.text());
+	totalHours += hours;
+	totalCell.text(totalHours);
+}
+
+function updateProjectTotal( project, hours )
+{
+	var totalHours = 0;
+	var totalCell = $("td[id="+project+"-total]");
+	var totalCellText = totalCell.text();
+	if( totalCellText != "" )
+		totalHours = parseInt(totalCell.text());
+	totalHours += hours;
+	totalCell.text(totalHours);
 }
 
 function makeBlankResourceRow( resource, project, title )
@@ -244,7 +269,8 @@ function makeBlankResourceRow( resource, project, title )
 	});
 	$resourcerow.append('<td><div class="resource-deleter">x</div><span class="project">'+title+'</span></td>');
 	for( var i=1; i<13; i++ )
-		$resourcerow.append('<td id="'+project+'-'+resource+'-2017-'+pad(i)+'" class="number editable"></td>');
+		$resourcerow.append('<td id="'+project+'-'+resource+'-'+year+'-'+pad(i)+'" class="number editable"></td>');
+	$resourcerow.append('<td id="'+project+'-'+resource+'-total" class="number totals-resource"></td>');
 	$("tr[data-tt-id="+project+"]").after($resourcerow);
 }
 
@@ -378,7 +404,7 @@ function setResource(resourceName, resourceId)
 	$resourceRow.removeAttr("id");
 	var html = "";
 	for( var j=1; j<13; j++ )
-		html += '<td id="'+projectId+'-'+resourceId+'-2017-'+pad(j)+'" class="number editable" contenteditable="true"></td>';
+		html += '<td id="'+projectId+'-'+resourceId+'-'+year+'-'+pad(j)+'" class="number editable" contenteditable="true"></td>';
 	$resourceRow.append(html);
 	//var $node = $("#resourceions-table").treetable("node", nodeId);
 	//$("#resourceions-table").treetable("loadBranch", $("#resourceions-table").treetable("node", resource), $resourcerow.prop("outerHTML") );
@@ -441,7 +467,7 @@ function removeRow( row )
 	{
 		for( var i=1; i<13; i++ )
 		{
-			var id = rowId+"-2017-"+pad(i);
+			var id = rowId+"-"+year+"-"+pad(i);
 			if( $("#"+id) != null )
 			{
 				var delta = -parseInt($("#"+id).text());

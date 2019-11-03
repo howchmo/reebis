@@ -334,6 +334,6 @@ app.get('/utilization', getUtilization);
 
 app.use( '/', express.static(__dirname+'/public'));
 app.use( '/scripts', express.static(__dirname+'/node_modules'));
-var port = 3000;
+var port = 7327;
 app.listen(port);
 console.log("listening on port "+port);

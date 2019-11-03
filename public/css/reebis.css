@@ -63,6 +63,18 @@ body {
 	width:104px;
 }
 
+.totals-resource {
+	font-weight:bold;
+	font-style: italic;
+}
+
+.totals-project {
+	font-size:100%;
+	font-style: italic;
+	color:white;
+	background:black;
+}
+
 .resource-header {
 	width:400px;
 }

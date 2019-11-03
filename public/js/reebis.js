@@ -195,8 +195,8 @@ function postProjection( cell )
 
 function generateHolidaysView( months )
 {
-	var start = "2017-01-01"; 
-	var end = "2017-12-01";
+	var start = "2019-09-01"; 
+	var end = "2020-08-01";
 	var $monthrow = $("<tr/>", {
 		"class":"holiday-row",
 	});
@@ -206,7 +206,7 @@ function generateHolidaysView( months )
 		var holidays = months[j-1].holidays;
 		var monthString = ("0"+j).slice(-2);
 		if( holidays != null )
-			$monthrow.append('<td id="holiday-2017-'+monthString+'" class="number">'+holidays+'</td>');
+			$monthrow.append('<td id="holiday-2020-'+monthString+'" class="number">'+holidays+'</td>');
 	}
 	$("thead").append($monthrow);
 }
@@ -223,7 +223,7 @@ function generateMaxHoursPerMonthView( months )
 		if( months[j-1].holidays != 0 )
 			work -= months[j-1].holidays;
 		var monthString = ("0"+j).slice(-2);
-		$monthrow.append('<td id="max-2017-'+monthString+'" class="number">'+work+'</td>');
+		$monthrow.append('<td id="max-2020-'+monthString+'" class="number">'+work+'</td>');
 	}
 	$("thead").append($monthrow);
 }
@@ -248,7 +248,7 @@ function addResourceRow( id, last, first, department )
 	for( var j=1; j<13; j++ )
 	{
 		var monthString = ("0"+j).slice(-2);
-		$resourcerow.append('<td class="number totals blank" id="'+id+'-2017-'+monthString+'"></td>');
+		$resourcerow.append('<td class="number totals blank" id="'+id+'-2020-'+monthString+'"></td>');
 	}
 	// rows.push($resourcerow);
 	$("#projections-table tbody").append($resourcerow);
@@ -357,9 +357,9 @@ function makeBlankProjectRow( resource, project, title, project_status )
 	{
 		var monthString = ("0"+i).slice(-2);
 		if( project_status == 3 )
-			$projectrow.append('<td id="'+resource+'-'+project+'-2017-'+monthString+'" class="number editable speculation"></td>');
+			$projectrow.append('<td id="'+resource+'-'+project+'-2020-'+monthString+'" class="number editable speculation"></td>');
 		else
-			$projectrow.append('<td id="'+resource+'-'+project+'-2017-'+monthString+'" class="number editable"></td>');
+			$projectrow.append('<td id="'+resource+'-'+project+'-2020-'+monthString+'" class="number editable"></td>');
 
 	}
 	$("tr[data-tt-id="+resource+"]").after($projectrow);
@@ -497,9 +497,9 @@ function setProject(projectTitle, projectId, projectStatus )
 	{
 		var monthString = ("0"+j).slice(-2);
 		if( projectStatus == 3 )
-			html += '<td id="'+resourceId+'-'+projectId+'-2017-'+monthString+'" class="number editable speculation" contenteditable="true"></td>';
+			html += '<td id="'+resourceId+'-'+projectId+'-2020-'+monthString+'" class="number editable speculation" contenteditable="true"></td>';
 		else
-			html += '<td id="'+resourceId+'-'+projectId+'-2017-'+monthString+'" class="number editable" contenteditable="true"></td>';
+			html += '<td id="'+resourceId+'-'+projectId+'-2020-'+monthString+'" class="number editable" contenteditable="true"></td>';
 	}
 	$projectRow.append(html);
 	//var $node = $("#projections-table").treetable("node", nodeId);
@@ -566,7 +566,7 @@ function removeProjectRow( row )
 		for( var i=1; i<13; i++ )
 		{
 			var monthString = ("0"+i).slice(-2);
-			var id = rowId+"-2017-"+monthString;
+			var id = rowId+"-2020-"+monthString;
 			if( $("#"+id) != null )
 			{
 				var delta = -parseInt($("#"+id).text());
